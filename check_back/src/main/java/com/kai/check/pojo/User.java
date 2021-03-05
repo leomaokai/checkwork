@@ -1,21 +1,24 @@
 package com.kai.check.pojo;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.kai.check.config.security.component.CustomAuthorityDeserializer;
+import com.kai.check.config.security.component.CustomUrlDecisionManager;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author kai
@@ -24,8 +27,8 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("t_user")
-@ApiModel(value="User对象", description="")
-public class User implements Serializable , UserDetails {
+@ApiModel(value = "User对象", description = "")
+public class User implements Serializable, UserDetails {
 
     private static final long serialVersionUID = 1L;
 
@@ -46,13 +49,30 @@ public class User implements Serializable , UserDetails {
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新时间")
-    @TableField(fill=FieldFill.INSERT_UPDATE)
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
 
     @Override
+    @JsonDeserialize(using = CustomAuthorityDeserializer.class)
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        SimpleGrantedAuthority authority = null;
+        switch (userRoleId) {
+            case 1:
+                authority = new SimpleGrantedAuthority("管理员");
+                break;
+            case 2:
+                authority = new SimpleGrantedAuthority("教师");
+                break;
+            case 3:
+                authority = new SimpleGrantedAuthority("学生");
+                break;
+            default:
+                break;
+        }
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(authority);
+        return authorities;
     }
 
     @Override

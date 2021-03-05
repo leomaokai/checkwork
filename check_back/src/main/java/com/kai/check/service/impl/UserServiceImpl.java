@@ -71,7 +71,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public RespBean login(String username, String password, HttpServletRequest request) {
+    public RespBean login(String username, String password, String code, HttpServletRequest request) {
+        //验证码校验
+        String captcha = (String) request.getSession().getAttribute("captcha");
+        if (code.isEmpty() || !captcha.equalsIgnoreCase(code)) {
+            return RespBean.error(RespBeanEnum.BIND_ERROR);
+        }
         // 登录
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         if (null == userDetails || !passwordEncoder.matches(password, userDetails.getPassword())) {

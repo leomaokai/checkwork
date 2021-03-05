@@ -13,4 +13,5 @@ import com.kai.check.pojo.RoleUrl;
  */
 public interface IRoleUrlService extends IService<RoleUrl> {
 
+    RoleUrl getUrlWithRole();
 }

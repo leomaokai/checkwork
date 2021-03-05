@@ -2,6 +2,7 @@ package com.kai.check.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.kai.check.pojo.WorkResult;
+import com.kai.check.utils.RespPageBean;
 
 /**
  * <p>
@@ -13,4 +14,5 @@ import com.kai.check.pojo.WorkResult;
  */
 public interface IWorkResultService extends IService<WorkResult> {
 
+    RespPageBean listCheckResult(Integer currentPage, Integer size, Integer workId);
 }

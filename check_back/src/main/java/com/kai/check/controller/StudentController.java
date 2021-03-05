@@ -6,11 +6,17 @@ import com.kai.check.pojo.Student;
 import com.kai.check.service.IStuWorkService;
 import com.kai.check.service.IStudentService;
 import com.kai.check.utils.RespBean;
+import com.kai.check.utils.RespBeanEnum;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.io.IOUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -62,9 +68,21 @@ public class StudentController {
     }
 
     @ApiOperation(value = "提交作业")
-    @PostMapping("/commitWork")
-    public RespBean commitWork(Integer workId, MultipartFile workFile, Principal principal) {
+    @PostMapping("/commitWork/{workId}")
+    public RespBean commitWork(@PathVariable("workId") Integer workId, MultipartFile workFile, Principal principal) {
         String name = principal.getName();
-        return studentService.commitWork(workId, workFile,name);
+        return studentService.commitWork(workId, workFile, name);
+    }
+
+    @ApiOperation(value = "删除作业")
+    @DeleteMapping("/deleteWork/{id}")
+    public RespBean deleteWork(@PathVariable("id") Integer stuWorkId) {
+        return stuWorkService.deleteWork(stuWorkId);
+    }
+
+    @ApiOperation(value = "下载作业(下载或在线查看)")
+    @GetMapping("/downWork/{stuWorkId}/{openStyle}")
+    public RespBean downWork(@PathVariable("stuWorkId") Integer stuWorkId,@PathVariable("openStyle") Integer isDown, HttpServletResponse response) {
+        return stuWorkService.downWork(stuWorkId,isDown,response);
     }
 }

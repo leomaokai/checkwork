@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author kai
@@ -21,7 +21,7 @@ public interface IUserService extends IService<User> {
 
     User getUserByUsername(String username);
 
-    RespBean login(String username, String password, HttpServletRequest request);
+    RespBean login(String username, String password, String code, HttpServletRequest request);
 
     RespBean updatePassword(String oldPassword, String newPassword, String name);
 

@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.*;
 import java.security.Principal;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -60,6 +61,7 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
     @Transactional
     public RespBean commitWork(Integer workId, MultipartFile workFile, String name) {
         WorkClass workClass = workClassMapper.selectOne(new QueryWrapper<WorkClass>().eq("id", workId));
+        LocalDateTime endTime = workClass.getEndTime();
         // 得到存放作业的目录
         String workDir = workClass.getWorkDir();
         // 得到作业的类型(cpp,java,python)
@@ -97,6 +99,10 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
         // 将文件信息存入数据库
         StuWork stuWork = stuWorkMapper.selectOne(new QueryWrapper<StuWork>().eq("work_id", workId).eq("stu_id", name));
         stuWork.setWorkName(newName).setWorkUrl(workDir + "/" + newName).setWorkExt(ext).setIsCommit(1);
+        if(LocalDateTime.now().isAfter(endTime)){
+            // 超时提交
+            stuWork.setIsCommit(2);
+        }
         if (stuWorkMapper.updateById(stuWork) == 1) {
             return RespBean.success();
         }

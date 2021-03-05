@@ -33,7 +33,7 @@ public class UserController {
     @ApiOperation(value = "登录之后返回token")
     @PostMapping("/login")
     public RespBean login(@RequestBody UserLoginParam userLoginParam, HttpServletRequest request) {
-        return userService.login(userLoginParam.getUsername(), userLoginParam.getPassword(), request);
+        return userService.login(userLoginParam.getUsername(), userLoginParam.getPassword(), userLoginParam.getCode(), request);
     }
 
     @ApiOperation(value = "获取当前登录的用户信息")
@@ -57,10 +57,10 @@ public class UserController {
 
     @ApiOperation(value = "更新当前用户密码")
     @PutMapping("/update")
-    public RespBean updatePassword(@RequestBody Map<String,String> info,Principal principal) {
+    public RespBean updatePassword(@RequestBody Map<String, String> info, Principal principal) {
         String oldPassword = info.get("oldPassword");
         String newPassword = info.get("newPassword");
         String name = principal.getName();
-        return userService.updatePassword(oldPassword,newPassword,name);
+        return userService.updatePassword(oldPassword, newPassword, name);
     }
 }

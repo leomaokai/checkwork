@@ -1,6 +1,7 @@
 package com.kai.check.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
@@ -42,5 +43,15 @@ public class WorkResult implements Serializable {
     @ApiModelProperty(value = "重复率")
     private String workResult;
 
+    @ApiModelProperty(value = "作业")
+    @TableField(exist = false)
+    private WorkClass workClass;
 
+    @ApiModelProperty(value = "学生作业1")
+    @TableField(exist = false)
+    private StuWork stuWorkFirst;
+
+    @ApiModelProperty(value = "学生作业2")
+    @TableField(exist = false)
+    private StuWork stuWorkSecond;
 }

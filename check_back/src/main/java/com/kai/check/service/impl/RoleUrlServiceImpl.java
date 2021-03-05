@@ -6,6 +6,8 @@ import com.kai.check.pojo.RoleUrl;
 import com.kai.check.service.IRoleUrlService;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
 /**
  * <p>
  *  服务实现类
@@ -17,4 +19,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class RoleUrlServiceImpl extends ServiceImpl<RoleUrlMapper, RoleUrl> implements IRoleUrlService {
 
+    @Resource
+    private RoleUrlMapper roleUrlMapper;
+    @Override
+    public RoleUrl getUrlWithRole() {
+        return null;
+    }
 }

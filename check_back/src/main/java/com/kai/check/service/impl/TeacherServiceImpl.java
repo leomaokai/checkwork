@@ -15,8 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -173,13 +174,68 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     }
 
     @Override
-    public RespBean check(Integer workId, String lang, String name) {
+    @Transactional
+    public RespBean teacherCheck(Integer workId, String name) {
         WorkClass workClass = workClassMapper.selectOne(new QueryWrapper<WorkClass>().eq("id", workId));
+        String resourcePath = workClass.getWorkDir();
         String workDescribe = workClass.getWorkDescribe();
-        String workDir = workClass.getWorkDir();
-        // 得到结果路径,若已有查询结果文件则将文件清除
-        String resPath = result + "/" + name + "/" + workDescribe;
-        File resDir = new File(resPath);
+        // 得到结果路径
+        String resultPath = result + "/" + name + "/" + workDescribe;
+        List<WorkResult> workResults = workResultMapper.selectList(new QueryWrapper<WorkResult>().eq("work_id", workId));
+        for (WorkResult workResult : workResults) {
+            Integer workFirstId = workResult.getWorkFirstId();
+            Integer workSecondId = workResult.getWorkSecondId();
+            StuWork stuWorkFirst = stuWorkMapper.selectOne(new QueryWrapper<StuWork>().eq("id", workFirstId));
+            StuWork stuWorkSecond = stuWorkMapper.selectOne(new QueryWrapper<StuWork>().eq("id", workSecondId));
+            String firstWorkExt = stuWorkFirst.getWorkExt();
+            String secondWorkExt = stuWorkSecond.getWorkExt();
+            if (firstWorkExt == null || secondWorkExt == null) {
+                // 有同学还没有提交作业
+                continue;
+            }
+            if (!firstWorkExt.equals(secondWorkExt)) {
+                // 文件类型不同无法查重,将结果设为-1
+                workResult.setWorkResult("-1");
+                continue;
+            }
+            String stuWorkFirstWorkName = stuWorkFirst.getWorkName();
+            String stuWorkSecondWorkName = stuWorkSecond.getWorkName();
+            String result = this.check(resourcePath, resultPath, stuWorkFirstWorkName, stuWorkSecondWorkName, firstWorkExt);
+            workResult.setWorkResult(result + "%");
+            workResultMapper.updateById(workResult);
+        }
+        return RespBean.success();
+    }
+
+    @Override
+    @Transactional
+    public RespBean deleteWork(Integer workId) {
+        if(workClassMapper.deleteById(workId)==1){
+            stuWorkMapper.delete(new QueryWrapper<StuWork>().eq("work_id", workId));
+            workResultMapper.delete(new QueryWrapper<WorkResult>().eq("work_id", workId));
+            return RespBean.success();
+        }
+        return RespBean.error();
+    }
+
+    @Override
+    @Transactional
+    public RespBean deleteClass(Integer classId) {
+        if(classTeaMapper.deleteById(classId)==1){
+            studentMapper.delete(new QueryWrapper<Student>().eq("stu_class_id",classId));
+            List<WorkClass> workClasses = workClassMapper.selectList(new QueryWrapper<WorkClass>().eq("class_id", classId));
+            for (WorkClass workClass : workClasses) {
+                Integer workId = workClass.getId();
+                stuWorkMapper.delete(new QueryWrapper<StuWork>().eq("work_id",workId));
+                workResultMapper.delete(new QueryWrapper<WorkResult>().eq("work_id",workId));
+                workClassMapper.deleteById(workId);
+            }
+            return RespBean.success();
+        }
+        return RespBean.error();
+    }
+
+    private void cleanFiles(File resDir) {
         if (resDir.listFiles() != null) {
             File[] files = resDir.listFiles();
             if (files != null) {
@@ -188,36 +244,70 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
                 }
             }
         }
+    }
+
+    private String check(String resourcePath, String resultPath, String workName1, String workName2, String lang) {
+        // 如果已经查重过(结果文件夹有文件),将结果清除重新查重
+        File resDir = new File(resultPath);
+        cleanFiles(resDir);
         try {
             // 查重
             List<String> args = new ArrayList<>();
             // 指定语言
             args.add("-l");
             // java只能检测java9以后版本
-            if ("Java".equals(lang)) {
+            if ("java".equals(lang)) {
                 args.add("java19");
-            } else if ("C".equals(lang) || "C++".equals(lang)) {
+            } else if ("cpp".equals(lang) || "c".equals(lang)) {
                 args.add("c/c++");
-            } else if ("Python".equals(lang)) {
+            } else if ("py".equals(lang)) {
                 args.add("python3");
             } else {
                 args.add(lang);
             }
             args.add("-r");
-            args.add(resPath);
+            args.add(resultPath);
             // 设置相似度检查门限参数值
-            args.add("-m");
-            args.add(sim + "%");
+//            args.add("-m");
+//            args.add(sim + "%");
             // 指定源文件存放路径
             args.add("-s");
-            args.add(workDir);
+            args.add(resourcePath);
+            args.add("-c");
+            args.add(workName1);
+            args.add(workName2);
             String[] toPass = new String[args.size()];
             toPass = args.toArray(toPass);
             new Program(new CommandLineOptions(toPass)).run();
         } catch (ExitException e) {
             e.printStackTrace();
         }
+        return getCheckResult(resultPath);
+    }
 
-        return null;
+    private String getCheckResult(String resultPath) {
+        String result = "-1";
+        File resultFile = new File(resultPath, "matches_avg.csv");
+        if (!resultFile.exists()) {
+            return result;
+        }
+        try (BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(resultFile));) {
+            byte[] bytes = new byte[(int) resultFile.length()];
+            bufferedInputStream.read(bytes);
+            StringBuilder resString = new StringBuilder(new String(bytes));
+            char c = ';';
+            Integer[] integers = new Integer[4];
+            int index = 0;
+            int length = resString.length();
+            for (int i = 0; i < length; i++) {
+                if (c == resString.charAt(i)) {
+                    integers[index++] = i;
+                }
+            }
+            result = resString.substring(integers[2] + 1, integers[3]);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }

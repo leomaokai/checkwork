@@ -30,5 +30,9 @@ public interface ITeacherService extends IService<Teacher> {
 
     Teacher getInfo(String name);
 
-    RespBean check(Integer workId, String lang, String name);
+    RespBean teacherCheck(Integer workId, String name);
+
+    RespBean deleteWork(Integer workId);
+
+    RespBean deleteClass(Integer classId);
 }
