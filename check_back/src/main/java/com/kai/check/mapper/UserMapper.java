@@ -19,4 +19,6 @@ public interface UserMapper extends BaseMapper<User> {
     IPage<User> getStudentByPage(Page<User> page,@Param("id") String studentId);
 
     IPage<User> getTeacherByPage(Page<User> page, @Param("id") String teacherId);
+
+    IPage<User> listUsersByPage(Page<User> userPage,@Param("id") String userId);
 }

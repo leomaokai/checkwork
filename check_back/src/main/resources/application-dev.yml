@@ -42,8 +42,8 @@ jwt:
   tokenHeader: Authorization
   # jwt 加密解密使用的密钥
   secret: maokai
-  # jwt 的超期限时间(60*5)
-  expiration: 3000
+  # jwt 的超期限时间(60*60*10)
+  expiration: 36000
   # jwt 负载中拿到开头
   tokenHead: Cumter
 

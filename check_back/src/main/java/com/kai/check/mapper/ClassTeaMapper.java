@@ -17,7 +17,5 @@ import org.apache.ibatis.annotations.Param;
 public interface ClassTeaMapper extends BaseMapper<ClassTea> {
 
     IPage<ClassTea> listClasses(Page<ClassTea> classTeaPage,
-                                @Param("classId") Integer classId,
-                                @Param("className") String className,
                                 @Param("username") String username);
 }

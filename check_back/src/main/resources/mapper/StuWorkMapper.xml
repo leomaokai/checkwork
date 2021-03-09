@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="com.kai.check.pojo.StuWork">
         <id column="id" property="id"/>
         <result column="work_id" property="workId"/>
+        <result column="class_id" property="classId"/>
         <result column="work_name" property="workName"/>
         <result column="stu_id" property="stuId"/>
         <result column="work_url" property="workUrl"/>
@@ -18,7 +19,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id
-        , work_id, work_name, stu_id, work_url, work_ext,is_commit, create_time, update_time
+        , work_id, class_id,work_name, stu_id, work_url, work_ext,is_commit, create_time, update_time
     </sql>
     <delete id="deleteByStuId">
         DELETE FROM

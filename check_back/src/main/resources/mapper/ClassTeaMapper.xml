@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="com.kai.check.pojo.ClassTea">
         <id column="id" property="id"/>
         <result column="class_name" property="className"/>
+        <result column="class_stu_number" property="classStuNumber"/>
         <result column="tea_id" property="teaId"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
@@ -14,18 +15,12 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id
-        , class_name, tea_id, create_time, update_time
+        , class_name, class_stu_number,tea_id, create_time, update_time
     </sql>
     <select id="listClasses" resultType="com.kai.check.pojo.ClassTea">
         select id,class_name
         from t_class_tea
         where tea_id=#{username}
-        <if test="null!=classId">
-            and id =#{classId}
-        </if>
-        <if test="className!=null and className!=''">
-            and class_name like concat('%',#{className},'%')
-        </if>
         order by id
     </select>
 

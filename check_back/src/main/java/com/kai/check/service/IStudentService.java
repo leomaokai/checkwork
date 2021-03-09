@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface IStudentService extends IService<Student> {
 
-    RespPageBean listStudents(Integer currentPage, Integer size, String studentId,String studentName);
+    RespPageBean listStudents(Integer currentPage, Integer size, Integer classId);
 
     Student getInfo(String name);
 

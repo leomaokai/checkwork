@@ -48,6 +48,8 @@ public class TeacherController {
     private IWorkResultService workResultService;
     @Resource
     private IStuWorkService stuWorkService;
+    @Resource
+    private ITeaWorkService teaWorkService;
 
     @ApiOperation(value = "获得当前用户(教师)信息")
     @GetMapping("/info")
@@ -74,11 +76,11 @@ public class TeacherController {
     }
 
     @ApiOperation(value = "查询学生信息(分页)")
-    @GetMapping("/listStudents")
+    @GetMapping("/listStudents/{classId}")
     public RespPageBean listStudents(@RequestParam(defaultValue = "1") Integer currentPage,
                                      @RequestParam(defaultValue = "10") Integer size,
-                                     String studentId, String studentName) {
-        return studentService.listStudents(currentPage, size, studentId, studentName);
+                                     @PathVariable("classId") Integer classId) {
+        return studentService.listStudents(currentPage, size,classId);
     }
 
     @ApiOperation(value = "初始化学生密码")
@@ -97,10 +99,10 @@ public class TeacherController {
     }
 
     @ApiOperation(value = "创建班级")
-    @PostMapping("/createClass")
-    public RespBean createClass(String className, Principal principal) {
+    @PostMapping("/createClass/{className}")
+    public RespBean createClass(@PathVariable("className") String className, Principal principal) {
         if (className.isEmpty()) {
-            return RespBean.error(RespBeanEnum.FAIL);
+            return RespBean.error(RespBeanEnum.INSERT_ERROR);
         }
         String teacherId = principal.getName();
         return teacherService.createClass(className, teacherId);
@@ -109,15 +111,15 @@ public class TeacherController {
     @GetMapping("/listClasses")
     public RespPageBean listClasses(@RequestParam(defaultValue = "1")Integer currentPage,
                                     @RequestParam(defaultValue = "10")Integer size,
-                                    @RequestParam(required = false) Integer classId,
-                                    @RequestParam(required = false) String className,Principal principal){
+                                     Principal principal){
         String name = principal.getName();
-        return classTeaService.listClasses(currentPage,size,classId,className,name);
+        return classTeaService.listClasses(currentPage,size,name);
     }
     @ApiOperation(value = "删除班级")
     @DeleteMapping("/deleteClass/{classId}")
-    public RespBean deleteClass(@PathVariable(value = "classId") Integer classId){
-        return teacherService.deleteClass(classId);
+    public RespBean deleteClass(@PathVariable(value = "classId") Integer classId,Principal principal){
+        String name = principal.getName();
+        return teacherService.deleteClass(classId,name);
     }
 
     @ApiOperation(value = "布置作业")
@@ -127,11 +129,13 @@ public class TeacherController {
         return teacherService.createWork(workClass,name);
     }
     @ApiOperation(value = "查询作业(分页 0查所有)")
-    @GetMapping("/listWorks/{classId}")
+    @GetMapping("/listWorks")
     public RespPageBean listWorks(@RequestParam(defaultValue = "1")Integer currentPage,
                                     @RequestParam(defaultValue = "10")Integer size,
-                                    @PathVariable(value = "classId",required = false) Integer classId){
-        return workClassService.listWorks(currentPage,size,classId);
+                                    String workName,
+                                    Principal principal){
+        String name = principal.getName();
+        return workClassService.listWorks(currentPage,size,workName,name);
     }
     @ApiOperation(value = "修改作业")
     @PutMapping("/updateWork")
@@ -143,8 +147,9 @@ public class TeacherController {
     }
     @ApiOperation(value = "删除作业")
     @DeleteMapping("/deleteWork/{workId}")
-    public RespBean deleteWork(@PathVariable("workId") Integer workId){
-        return teacherService.deleteWork(workId);
+    public RespBean deleteWork(@PathVariable("workId") Integer workId,Principal principal){
+        String name = principal.getName();
+        return teacherService.deleteWork(workId,name);
     }
 
     @ApiOperation(value = "将作业发送给学生")
@@ -178,5 +183,12 @@ public class TeacherController {
                                         @RequestParam(defaultValue = "10")Integer size,
                                         @PathVariable("id") Integer workId){
         return workResultService.listCheckResult(currentPage,size,workId);
+    }
+
+    @ApiOperation(value = "新布置作业(传标题,描述,截止日期)")
+    @PostMapping("/dispose")
+    public RespBean disposeWork(@RequestBody TeaWork teaWork,Integer [] classIds,Principal principal){
+        String teaId = principal.getName();
+        return teacherService.disposeWork(teaWork,classIds,teaId);
     }
 }

@@ -46,9 +46,9 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
     private ClassTeaMapper classTeaMapper;
 
     @Override
-    public RespPageBean listStudents(Integer currentPage, Integer size, String studentId, String studentName) {
+    public RespPageBean listStudents(Integer currentPage, Integer size, Integer classId) {
         Page<Student> studentPage = new Page<>(currentPage, size);
-        IPage<Student> res = studentMapper.listStudents(studentPage, studentId, studentName);
+        IPage<Student> res = studentMapper.listStudents(studentPage,classId);
         return new RespPageBean(res.getTotal(), res.getRecords());
     }
 

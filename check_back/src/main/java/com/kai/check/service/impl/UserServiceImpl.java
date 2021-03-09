@@ -55,6 +55,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Resource
     private WorkResultMapper workResultMapper;
     @Resource
+    private MenusMapper menusMapper;
+    @Resource
     private UserDetailsService userDetailsService;
     @Resource
     private PasswordEncoder passwordEncoder;
@@ -64,6 +66,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private String tokenHead;
     @Value("${kai.resource}")
     private String resource;
+    @Value("${kai.result}")
+    private String result;
 
     @Override
     public User getUserByUsername(String username) {
@@ -74,7 +78,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public RespBean login(String username, String password, String code, HttpServletRequest request) {
         //验证码校验
         String captcha = (String) request.getSession().getAttribute("captcha");
-        if (code.isEmpty() || !captcha.equalsIgnoreCase(code)) {
+        if (code == null || code.isEmpty() || !captcha.equalsIgnoreCase(code)) {
             return RespBean.error(RespBeanEnum.BIND_ERROR);
         }
         // 登录
@@ -88,25 +92,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         // 得到token
         String token = jwtTokenUtil.generateToken(userDetails);
         Map<String, Object> map = new HashMap<>();
+        User user = this.getUserByUsername(username);
+        Integer roleId = user.getUserRoleId();
+        map.put("roleId", roleId);
         map.put("token", token);
         map.put("tokenHead", tokenHead);
 
-        return RespBean.success(map);
+        return RespBean.success(RespBeanEnum.LOGIN_SUCCESS, map);
     }
 
     @Override
     @Transactional
     public RespBean updatePassword(String oldPassword, String newPassword, String name) {
         User user = this.getUserByUsername(name);
-        System.out.println(user);
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if (encoder.matches(oldPassword, user.getPassword())) {
+        if (passwordEncoder.matches(oldPassword, user.getPassword())) {
             user.setPassword(encoder.encode(newPassword));
             if (userMapper.updateById(user) == 1) {
-                return RespBean.success();
+                return RespBean.success(RespBeanEnum.UPDATE_PWD_SUCCESS);
             }
         }
-        return RespBean.error(RespBeanEnum.UPDATE_ERROR);
+        return RespBean.error(RespBeanEnum.UPDATE_PWD_ERROR);
     }
 
     @Override
@@ -145,8 +151,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     @Transactional
     public Boolean insertUser(Integer roleId, String[] usernames) {
-        int len = usernames.length;
-        int ret = 0;
         for (String username : usernames) {
             User user1 = userMapper.selectById(username);
             if (user1 != null) {
@@ -156,17 +160,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             user.setUsername(username);
             user.setUserRoleId(roleId);
             user.setPassword(passwordEncoder.encode(username));
-            ret += userMapper.insert(user);
+            userMapper.insert(user);
             if (roleId == 2) {
                 Teacher teacher = new Teacher();
                 teacher.setTeaId(username);
                 teacherMapper.insert(teacher);
             }
         }
-        if (len == ret) {
-            return true;
-        }
-        return false;
+        return true;
     }
 
     @Override
@@ -185,10 +186,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     @Transactional
+    public RespBean initUserPassword(String username){
+        User user = userMapper.selectById(username);
+        user.setPassword(passwordEncoder.encode(user.getUsername()));
+        if(userMapper.updateById(user)==1){
+            return RespBean.success(RespBeanEnum.INIT_SUCCESS);
+        }
+        return RespBean.error(RespBeanEnum.INIT_ERROR);
+    }
+
+    @Override
+    @Transactional
     public RespBean deleteTeacher(String id) {
         File file = new File(resource, id);
         if (file.exists()) {
             file.delete();
+        }
+        File file1 = new File(result, id);
+        if (file1.exists()) {
+            file1.delete();
         }
         List<ClassTea> classTeas = classTeaMapper.selectList(new QueryWrapper<ClassTea>().eq("tea_id", id));
         for (ClassTea classTea : classTeas) {
@@ -213,5 +229,38 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return RespBean.success();
         }
         return RespBean.error();
+    }
+
+    @Override
+    public List<Menus> getMenus(String name) {
+        return menusMapper.getMenus(name);
+    }
+
+    @Override
+    public RespPageBean listUsersByPage(Integer currentPage, Integer size, String userId) {
+        Page<User> userPage = new Page<>(currentPage, size);
+        IPage<User> res = userMapper.listUsersByPage(userPage, userId);
+        return new RespPageBean(res.getTotal(), res.getRecords());
+    }
+
+    @Override
+    public boolean insertOneUser(Integer roleId, String teachersId) {
+        User user1 = userMapper.selectById(teachersId);
+        if (user1 != null) {
+            return false;
+        }
+        User user = new User();
+        user.setUsername(teachersId);
+        user.setUserRoleId(roleId);
+        user.setPassword(passwordEncoder.encode(teachersId));
+        userMapper.insert(user);
+        if (roleId == 2) {
+            Teacher teacher = new Teacher();
+            teacher.setTeaId(teachersId);
+            if (teacherMapper.insert(teacher) == 1) {
+                return true;
+            }
+        }
+        return false;
     }
 }

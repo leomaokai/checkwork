@@ -35,6 +35,9 @@ public class StuWork implements Serializable {
     @ApiModelProperty(value = "作业id")
     private Integer workId;
 
+    @ApiModelProperty(value = "班级id")
+    private Integer classId;
+
     @ApiModelProperty(value = "作业名")
     private String workName;
 

@@ -10,6 +10,9 @@
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
+    <resultMap id="listUsersByPageMap" type="com.kai.check.pojo.User" extends="BaseResultMap">
+        <result column="userRole" property="userRole"/>
+    </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
@@ -42,6 +45,25 @@
             AND username LIKE CONCAT('%',#{id},'%')
         </if>
         ORDER BY username
+    </select>
+    <select id="listUsersByPage" resultMap="listUsersByPageMap">
+        select
+        u.`username`,
+        u.`user_role_id`,
+        u.`create_time`,
+        u.`update_time`,
+        ru.`role_name` as userRole
+        from
+        t_user u,
+        t_role_url ru
+        where
+        user_role_id!=1
+        and
+        u.`user_role_id`=ru.`id`
+        <if test="null!=id and ''!=id">
+            AND username LIKE CONCAT('%',#{id},'%')
+        </if>
+        order by u.`user_role_id`,u.`username`
     </select>
 
 </mapper>

@@ -1,6 +1,7 @@
 package com.kai.check.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.kai.check.pojo.Menus;
 import com.kai.check.pojo.User;
 import com.kai.check.utils.RespBean;
 import com.kai.check.utils.RespPageBean;
@@ -37,4 +38,12 @@ public interface IUserService extends IService<User> {
     RespBean initStuById(String studentId);
 
     RespBean deleteTeacher(String id);
+
+    List<Menus> getMenus(String name);
+
+    RespPageBean listUsersByPage(Integer currentPage, Integer size, String userId);
+
+    boolean insertOneUser(Integer roleId, String teachersId);
+
+    RespBean initUserPassword(String username);
 }

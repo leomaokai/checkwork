@@ -2,6 +2,7 @@ package com.kai.check.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.kai.check.pojo.StuWork;
+import com.kai.check.pojo.TeaWork;
 import com.kai.check.pojo.Teacher;
 import com.kai.check.pojo.WorkClass;
 import com.kai.check.utils.RespBean;
@@ -32,7 +33,9 @@ public interface ITeacherService extends IService<Teacher> {
 
     RespBean teacherCheck(Integer workId, String name);
 
-    RespBean deleteWork(Integer workId);
+    RespBean deleteWork(Integer workId, String name);
 
-    RespBean deleteClass(Integer classId);
+    RespBean deleteClass(Integer classId, String name);
+
+    RespBean disposeWork(TeaWork teaWork, Integer[] classIds, String teaId);
 }

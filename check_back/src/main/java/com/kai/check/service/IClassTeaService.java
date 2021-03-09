@@ -14,6 +14,6 @@ import com.kai.check.utils.RespPageBean;
  */
 public interface IClassTeaService extends IService<ClassTea> {
 
-    RespPageBean listClasses(Integer currentPage, Integer size, Integer classId, String className,String name);
+    RespPageBean listClasses(Integer currentPage, Integer size, String name);
 
 }

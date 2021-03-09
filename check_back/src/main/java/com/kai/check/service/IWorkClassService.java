@@ -14,5 +14,6 @@ import com.kai.check.utils.RespPageBean;
  */
 public interface IWorkClassService extends IService<WorkClass> {
 
-    RespPageBean listWorks(Integer currentPage, Integer size, Integer classId);
+    RespPageBean listWorks(Integer currentPage, Integer size, String workName,String username);
+
 }

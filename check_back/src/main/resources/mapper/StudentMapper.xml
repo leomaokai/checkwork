@@ -26,28 +26,18 @@
         stu_id
         , stu_name, stu_phone, stu_qq, stu_mail, stu_class_id, create_time, update_time
     </sql>
-    <select id="listStudents" resultMap="listStudentsResultMap">
+    <select id="listStudents" resultType="com.kai.check.pojo.Student">
         SELECT
         DISTINCT
         stu.`stu_id`,
         stu.`stu_name`,
         stu.`stu_phone`,
         stu.`stu_qq`,
-        stu.`stu_mail`,
-        ct.`id`,
-        ct.`class_name`,
-        ct.`tea_id`
+        stu.`stu_mail`
         FROM
-        t_student stu,
-        t_class_tea ct
+        t_student stu
         WHERE
-        stu.`stu_class_id`=ct.`id`
-        <if test="null!=id and ''!=id">
-            and stu.`stu_id` like concat('%',#{id},'%')
-        </if>
-        <if test="null!=id and ''!=name">
-            and stu.`stu_name` like concat('%',#{name},'%')
-        </if>
+        stu.`stu_class_id`=#{classId}
         ORDER BY stu.`stu_id`
     </select>
 

@@ -27,9 +27,9 @@ public class ClassTeaServiceImpl extends ServiceImpl<ClassTeaMapper, ClassTea> i
     private ClassTeaMapper classTeaMapper;
 
     @Override
-    public RespPageBean listClasses(Integer currentPage, Integer size, Integer classId, String className, String name) {
+    public RespPageBean listClasses(Integer currentPage, Integer size, String name) {
         Page<ClassTea> classTeaPage = new Page<>(currentPage, size);
-        IPage<ClassTea> res = classTeaMapper.listClasses(classTeaPage, classId, className, name);
+        IPage<ClassTea> res = classTeaMapper.listClasses(classTeaPage, name);
         return new RespPageBean(res.getTotal(), res.getRecords());
     }
 

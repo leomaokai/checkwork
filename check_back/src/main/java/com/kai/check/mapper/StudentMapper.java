@@ -16,6 +16,6 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface StudentMapper extends BaseMapper<Student> {
 
-    IPage<Student> listStudents(Page<Student> studentPage,@Param("id") String studentId,@Param("name") String studentName);
+    IPage<Student> listStudents(Page<Student> studentPage,@Param("classId") Integer classId);
 
 }

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kai.check.mapper.MenusMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.kai.check.pojo.Menus">
+        <id column="menu_id" property="menuId" />
+        <result column="menu_rid" property="menuRid" />
+        <result column="menu_url" property="menuUrl" />
+        <result column="menu_path" property="menuPath" />
+        <result column="menu_name" property="menuName" />
+        <result column="menu_component" property="menuComponent" />
+        <result column="menu_pid" property="menuPid" />
+    </resultMap>
+    <resultMap id="Menus" type="com.kai.check.pojo.Menus" extends="BaseResultMap">
+        <collection property="children" ofType="com.kai.check.pojo.Menus">
+            <id column="menu_id2" property="menuId"/>
+            <result column="menu_rid2" property="menuRid"/>
+            <result column="menu_url2" property="menuUrl"/>
+            <result column="menu_path2" property="menuPath"/>
+            <result column="menu_name2" property="menuName"/>
+            <result column="menu_component2" property="menuComponent"/>
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        menu_id, menu_rid, menu_url, menu_path, menu_name, menu_component, menu_pid
+    </sql>
+    <select id="getMenus" resultMap="Menus">
+        SELECT
+            m1.*,
+            m2.`menu_id` AS menu_id2,
+            m2.`menu_rid` AS menu_rid2,
+            m2.`menu_url` AS menu_url2,
+            m2.`menu_path` AS menu_path2,
+            m2.`menu_name` AS menu_name2,
+            m2.`menu_component` AS menu_component2
+        FROM
+            t_user u,
+            t_menus m1,
+            t_menus m2
+        WHERE
+            u.`username`=#{name}
+          AND
+            u.`user_role_id`=m1.`menu_rid`
+          AND
+            m1.`menu_pid`=0
+          AND
+            m2.`menu_pid`=m1.`menu_id`
+    </select>
+
+</mapper>

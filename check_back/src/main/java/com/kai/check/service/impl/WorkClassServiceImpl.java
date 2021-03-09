@@ -13,7 +13,7 @@ import javax.annotation.Resource;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author kai
@@ -24,10 +24,11 @@ public class WorkClassServiceImpl extends ServiceImpl<WorkClassMapper, WorkClass
 
     @Resource
     private WorkClassMapper workClassMapper;
+
     @Override
-    public RespPageBean listWorks(Integer currentPage, Integer size, Integer classId) {
+    public RespPageBean listWorks(Integer currentPage, Integer size, String workName, String username) {
         Page<WorkClass> workClassPage = new Page<>(currentPage, size);
-        IPage<WorkClass> res=workClassMapper.listWorks(workClassPage,classId);
-        return new RespPageBean(res.getTotal(),res.getRecords());
+        IPage<WorkClass> res = workClassMapper.listWorks(workClassPage, workName, username);
+        return new RespPageBean(res.getTotal(), res.getRecords());
     }
 }

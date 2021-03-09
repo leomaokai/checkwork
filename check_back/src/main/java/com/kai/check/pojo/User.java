@@ -1,6 +1,7 @@
 package com.kai.check.pojo;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.kai.check.config.security.component.CustomAuthorityDeserializer;
 import com.kai.check.config.security.component.CustomUrlDecisionManager;
@@ -45,13 +46,18 @@ public class User implements Serializable, UserDetails {
     private Integer userRoleId;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
+    @ApiModelProperty(value = "角色")
+    @TableField(exist = false)
+    private String userRole;
 
     @Override
     @JsonDeserialize(using = CustomAuthorityDeserializer.class)

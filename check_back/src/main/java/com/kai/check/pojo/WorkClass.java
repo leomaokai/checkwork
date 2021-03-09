@@ -28,9 +28,12 @@ public class WorkClass implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "作业id")
+    @ApiModelProperty(value = "id")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+
+    @ApiModelProperty(value = "作业id")
+    private Integer workId;
 
     @ApiModelProperty(value = "作业描述")
     private String workDescribe;
@@ -38,12 +41,18 @@ public class WorkClass implements Serializable {
     @ApiModelProperty(value = "作业目录")
     private String workDir;
 
+    @ApiModelProperty(value = "教师id")
+    private String teaId;
+
     @ApiModelProperty(value = "班级id")
     private Integer classId;
 
     @ApiModelProperty(value = "截至时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private LocalDateTime endTime;
+
+    @ApiModelProperty(value = "应提交人数")
+    private Integer totalNumber;
 
     @ApiModelProperty(value = "创建时间")
     @TableField(fill = FieldFill.INSERT)

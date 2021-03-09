@@ -1,6 +1,7 @@
 package com.kai.check.controller;
 
 
+import com.kai.check.pojo.Menus;
 import com.kai.check.pojo.User;
 import com.kai.check.pojo.UserLoginParam;
 import com.kai.check.service.IUserService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -52,7 +54,7 @@ public class UserController {
     @PostMapping("/logout")
     public RespBean logout() {
         // 前端直接将token删除即可,之后访问会被拦截器拦截
-        return RespBean.success();
+        return RespBean.success(RespBeanEnum.LOGOUT_SUCCESS);
     }
 
     @ApiOperation(value = "更新当前用户密码")
@@ -63,4 +65,12 @@ public class UserController {
         String name = principal.getName();
         return userService.updatePassword(oldPassword, newPassword, name);
     }
+
+    @ApiOperation(value = "查询个人菜单")
+    @GetMapping("/menus")
+    public List<Menus> getMenus(Principal principal){
+        String name = principal.getName();
+        return userService.getMenus(name);
+    }
+
 }

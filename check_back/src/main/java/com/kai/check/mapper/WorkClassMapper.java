@@ -17,5 +17,6 @@ import org.apache.ibatis.annotations.Param;
 public interface WorkClassMapper extends BaseMapper<WorkClass> {
 
     IPage<WorkClass> listWorks(Page<WorkClass> workClassPage,
-                               @Param("classId") Integer classId);
+                               @Param("workName") String workName,
+                               @Param("username") String username);
 }
