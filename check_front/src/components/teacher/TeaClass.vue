@@ -37,7 +37,7 @@
               >
             </template>
           </el-table-column>
-          <el-table-column label="">
+          <el-table-column fixed="right">
             <template slot-scope="scope">
               <el-button
                 size="mini"
@@ -313,8 +313,41 @@ export default {
       });
     },
 
-    handleEdit(index, oneClass) {},
-    handleDelete(index, oneClass) {},
+    handleEdit(index, oneClass) {
+      this.$prompt("请输入新的班级名称", "功能为开放", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      })
+        .then(({ value }) => {
+          this.$message({
+            type: "success",
+            message: "功能未开放",
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "取消输入",
+          });
+        });
+    },
+    handleDelete(index, oneClass) {
+      this.$confirm("此操作将永久删除该班级包括其学生, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$delete("/teacher/deleteClass/" + oneClass.id).then((res) => {});
+          this.initClasses();
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+    },
     handleSizeChange(val) {
       this.size = val;
       this.initClasses();
@@ -343,7 +376,7 @@ export default {
         if (res) {
           this.classData = res.data;
           this.total = res.total;
-          this.$store.commit("initClass", res.data);
+          // this.$store.commit("initClass", res.data);
         }
       });
     },

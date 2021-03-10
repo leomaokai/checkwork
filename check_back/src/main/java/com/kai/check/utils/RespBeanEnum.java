@@ -26,13 +26,19 @@ public enum RespBeanEnum {
     LOGOUT_SUCCESS(200201,"退出成功"),
     UPDATE_PWD_SUCCESS(200202,"更新密码成功"),
 
+    DISPOSE_SUCCESS(200205,"布置成功"),
+    DISPOSE_ERROR(500219,"布置失败"),
     INSERT_ERROR(500215,"添加失败"),
     INSERT_SUCCESS(200203,"添加成功"),
     COMMIT_SUCCESS(200204,"提交成功"),
     COMMIT_ERROR(500216,"提交失败"),
     COMMIT_NOT(500217,"打开失败"),
     INIT_ERROR(500218,"初始化失败"),
-    INIT_SUCCESS(200204,"初始化成功")
+    INIT_SUCCESS(200206,"初始化成功"),
+    DELETE_SUCCESS(200207,"删除成功"),
+    DELETE_ERROR(500219,"删除失败"),
+    UPDATE_SUCCESS(200208,"修改成功"),
+    UPDATE_ERROR(500220,"修改失败")
     // 提交模块
 
     ;

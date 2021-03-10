@@ -53,6 +53,9 @@ public class AdminController {
     @ApiOperation(value = "添加一个老师用户")
     @PostMapping("/insert/{id}")
     public RespBean insertTeachersByAdmin(@PathVariable("id") String teachersId) {
+        if(teachersId.equals("") || teachersId.isEmpty()){
+            return RespBean.error(RespBeanEnum.INSERT_ERROR);
+        }
         Integer roleId = 2;
         if (userService.insertOneUser(roleId, teachersId)) {
             return RespBean.success(RespBeanEnum.INSERT_SUCCESS);

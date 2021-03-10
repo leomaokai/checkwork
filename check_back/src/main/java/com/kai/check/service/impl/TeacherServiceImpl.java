@@ -18,10 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.io.*;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * <p>
@@ -72,7 +70,7 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     @Transactional
     public RespBean createClass(String className, String teacherId) {
         ClassTea one = classTeaMapper.selectOne(new QueryWrapper<ClassTea>().eq("class_name", className));
-        if(one!=null){
+        if (one != null) {
             return RespBean.error(RespBeanEnum.INSERT_ERROR);
         }
         ClassTea classTea = new ClassTea();
@@ -98,7 +96,7 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
         Integer roleId = 3;
         if (userService.insertUser(roleId, students)) {
             for (String studentId : students) {
-                if(studentMapper.selectById(studentId)!=null){
+                if (studentMapper.selectById(studentId) != null) {
                     continue;
                 }
                 Student stu = new Student();
@@ -110,198 +108,265 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
         return RespBean.success(RespBeanEnum.INSERT_SUCCESS);
     }
 
-    /**
-     * 布置作业
-     *
-     * @param workClass
-     * @return
-     */
-    @Override
-    @Transactional
-    public RespBean createWork(WorkClass workClass, String name) {
-        // 创建作业目录
-        String workDescribe = workClass.getWorkDescribe();
-        String path = resource + "/" + name;
-        File workDir = new File(path, workDescribe);
-        if (!workDir.exists()) {
-            workDir.mkdirs();
-        }
-        String workDirPath = workDir.getPath();
-        workClass.setWorkDir(workDirPath);
-        if (workClassMapper.insert(workClass) == 1) {
-            return RespBean.success();
-        }
-        return RespBean.error();
-    }
 
-    @Override
-    @Transactional
-    public RespBean workToStu(Integer workId) {
-        WorkClass workClass = workClassMapper.selectOne(new QueryWrapper<WorkClass>().eq("id", workId));
-        Integer classId = workClass.getClassId();
-        List<Student> students = studentMapper.selectList(new QueryWrapper<Student>().eq("stu_class_id", classId));
-        int len = students.size();
-        int ret = 0;
-        for (Student student : students) {
-            String stuId = student.getStuId();
-            // 判断是否已经存在
-            StuWork stuWork1 = stuWorkMapper.selectOne(new QueryWrapper<StuWork>().eq("stu_id", stuId).eq("work_id", workId));
-            if (stuWork1 != null) {
-                ret++;
-                continue;
-            }
-            StuWork stuWork = new StuWork();
-            stuWork.setStuId(stuId);
-            stuWork.setWorkId(workId);
-            ret += stuWorkMapper.insert(stuWork);
-        }
-        if (len == ret) {
-            //return RespBean.success();
-            List<StuWork> stuWorks = stuWorkMapper.selectList(new QueryWrapper<StuWork>().eq("work_id", workId));
-            int size = stuWorks.size();
-            for (int i = 0; i < size - 1; i++) {
-                for (int j = i + 1; j < size; j++) {
-                    WorkResult workResult = new WorkResult();
-                    workResult.setWorkId(workId);
-                    workResult.setWorkFirstId(stuWorks.get(i).getId());
-                    workResult.setWorkSecondId(stuWorks.get(j).getId());
-                    workResultMapper.insert(workResult);
-                }
-            }
-            return RespBean.success();
-        }
-        return RespBean.error();
-    }
+//    @Override
+//    @Transactional
+//    public RespBean createWork(WorkClass workClass, String name) {
+//        // 创建作业目录
+//        String workDescribe = workClass.getWorkDescribe();
+//        String path = resource + "/" + name;
+//        File workDir = new File(path, workDescribe);
+//        if (!workDir.exists()) {
+//            workDir.mkdirs();
+//        }
+//        String workDirPath = workDir.getPath();
+//        workClass.setWorkDir(workDirPath);
+//        if (workClassMapper.insert(workClass) == 1) {
+//            return RespBean.success();
+//        }
+//        return RespBean.error();
+//    }
 
-    @Override
-    @Transactional
-    public List<StuWork> workCondition(Integer workId) {
-        List<StuWork> stuWorks = stuWorkMapper.selectList(new QueryWrapper<StuWork>().eq("work_id", workId));
-        return stuWorks;
-    }
+//    @Override
+//    @Transactional
+//    public RespBean workToStu(Integer workId) {
+//        WorkClass workClass = workClassMapper.selectOne(new QueryWrapper<WorkClass>().eq("id", workId));
+//        Integer classId = workClass.getClassId();
+//        List<Student> students = studentMapper.selectList(new QueryWrapper<Student>().eq("stu_class_id", classId));
+//        int len = students.size();
+//        int ret = 0;
+//        for (Student student : students) {
+//            String stuId = student.getStuId();
+//            // 判断是否已经存在
+//            StuWork stuWork1 = stuWorkMapper.selectOne(new QueryWrapper<StuWork>().eq("stu_id", stuId).eq("work_id", workId));
+//            if (stuWork1 != null) {
+//                ret++;
+//                continue;
+//            }
+//            StuWork stuWork = new StuWork();
+//            stuWork.setStuId(stuId);
+//            stuWork.setWorkId(workId);
+//            ret += stuWorkMapper.insert(stuWork);
+//        }
+//        if (len == ret) {
+//            //return RespBean.success();
+//            List<StuWork> stuWorks = stuWorkMapper.selectList(new QueryWrapper<StuWork>().eq("work_id", workId));
+//            int size = stuWorks.size();
+//            for (int i = 0; i < size - 1; i++) {
+//                for (int j = i + 1; j < size; j++) {
+//                    WorkResult workResult = new WorkResult();
+//                    workResult.setWorkId(workId);
+//                    workResult.setWorkFirstId(stuWorks.get(i).getId());
+//                    workResult.setWorkSecondId(stuWorks.get(j).getId());
+//                    workResultMapper.insert(workResult);
+//                }
+//            }
+//            return RespBean.success();
+//        }
+//        return RespBean.error();
+//    }
+
+//    @Override
+//    @Transactional
+//    public List<StuWork> workCondition(Integer workId) {
+//        List<StuWork> stuWorks = stuWorkMapper.selectList(new QueryWrapper<StuWork>().eq("work_id", workId));
+//        return stuWorks;
+//    }
 
     @Override
     public Teacher getInfo(String name) {
         return teacherMapper.selectOne(new QueryWrapper<Teacher>().eq("tea_id", name));
     }
 
-    @Override
-    @Transactional
-    public RespBean teacherCheck(Integer workId, String name) {
-        WorkClass workClass = workClassMapper.selectOne(new QueryWrapper<WorkClass>().eq("id", workId));
-        String resourcePath = workClass.getWorkDir();
-        String workDescribe = workClass.getWorkDescribe();
-        // 得到结果路径
-        String resultPath = result + "/" + name + "/" + workDescribe;
-        List<WorkResult> workResults = workResultMapper.selectList(new QueryWrapper<WorkResult>().eq("work_id", workId));
-        for (WorkResult workResult : workResults) {
-            Integer workFirstId = workResult.getWorkFirstId();
-            Integer workSecondId = workResult.getWorkSecondId();
-            StuWork stuWorkFirst = stuWorkMapper.selectOne(new QueryWrapper<StuWork>().eq("id", workFirstId));
-            StuWork stuWorkSecond = stuWorkMapper.selectOne(new QueryWrapper<StuWork>().eq("id", workSecondId));
-            String firstWorkExt = stuWorkFirst.getWorkExt();
-            String secondWorkExt = stuWorkSecond.getWorkExt();
-            if (firstWorkExt == null || secondWorkExt == null) {
-                // 有同学还没有提交作业
-                continue;
-            }
-            if (!firstWorkExt.equals(secondWorkExt)) {
-                // 文件类型不同无法查重,将结果设为-1
-                workResult.setWorkResult("-1");
-                continue;
-            }
-            String stuWorkFirstWorkName = stuWorkFirst.getWorkName();
-            String stuWorkSecondWorkName = stuWorkSecond.getWorkName();
-            String result = this.check(resourcePath, resultPath, stuWorkFirstWorkName, stuWorkSecondWorkName, firstWorkExt);
-            workResult.setWorkResult(result + "%");
-            workResultMapper.updateById(workResult);
-        }
-        return RespBean.success();
-    }
+//    @Override
+//    @Transactional
+//    public RespBean teacherCheck(Integer workId, String name) {
+//        WorkClass workClass = workClassMapper.selectOne(new QueryWrapper<WorkClass>().eq("id", workId));
+//        String resourcePath = workClass.getWorkDir();
+//        String workDescribe = workClass.getWorkDescribe();
+//        // 得到结果路径
+//        String resultPath = result + "/" + name + "/" + workDescribe;
+//        List<WorkResult> workResults = workResultMapper.selectList(new QueryWrapper<WorkResult>().eq("work_id", workId));
+//        for (WorkResult workResult : workResults) {
+//            Integer workFirstId = workResult.getWorkFirstId();
+//            Integer workSecondId = workResult.getWorkSecondId();
+//            StuWork stuWorkFirst = stuWorkMapper.selectOne(new QueryWrapper<StuWork>().eq("id", workFirstId));
+//            StuWork stuWorkSecond = stuWorkMapper.selectOne(new QueryWrapper<StuWork>().eq("id", workSecondId));
+//            String firstWorkExt = stuWorkFirst.getWorkExt();
+//            String secondWorkExt = stuWorkSecond.getWorkExt();
+//            if (firstWorkExt == null || secondWorkExt == null) {
+//                // 有同学还没有提交作业
+//                continue;
+//            }
+//            if (!firstWorkExt.equals(secondWorkExt)) {
+//                // 文件类型不同无法查重,将结果设为-1
+//                workResult.setWorkResult("-1");
+//                continue;
+//            }
+//            String stuWorkFirstWorkName = stuWorkFirst.getWorkName();
+//            String stuWorkSecondWorkName = stuWorkSecond.getWorkName();
+//            String result = this.check(resourcePath, resultPath, stuWorkFirstWorkName, stuWorkSecondWorkName, firstWorkExt);
+//            workResult.setWorkResult(result + "%");
+//            workResultMapper.updateById(workResult);
+//        }
+//        return RespBean.success();
+//    }
 
-    @Override
-    @Transactional
-    public RespBean deleteWork(Integer workId, String name) {
-        if(this.deleteWorkNormal(workId,name)){
-            return RespBean.success();
-        }
-        return RespBean.error();
-    }
+//    @Override
+//    @Transactional
+//    public RespBean deleteWork(Integer workId, String name) {
+//        if (this.deleteWorkNormal(workId, name)) {
+//            return RespBean.success();
+//        }
+//        return RespBean.error();
+//    }
 
     @Override
     @Transactional
     public RespBean deleteClass(Integer classId, String name) {
-        if(classTeaMapper.deleteById(classId)==1){
+        if (classTeaMapper.deleteById(classId) == 1) {
             List<Student> students = studentMapper.selectList(new QueryWrapper<Student>().eq("stu_class_id", classId));
             for (Student student : students) {
                 String stuId = student.getStuId();
-                userService.removeById(stuId);
+                userMapper.deleteById(stuId);
                 studentMapper.deleteById(stuId);
             }
-            List<WorkClass> workClasses = workClassMapper.selectList(new QueryWrapper<WorkClass>().eq("class_id", classId));
-            for (WorkClass workClass : workClasses) {
-                Integer workId = workClass.getId();
-                if(this.deleteWorkNormal(workId,name)){
-                    continue;
-                }
-            }
-            return RespBean.success();
+            List<StuWork> stuWorks = stuWorkMapper.selectList(new QueryWrapper<StuWork>().eq("class_id", classId));
+            this.deleteWorkByStuWorks(stuWorks);
+            stuWorkMapper.delete(new QueryWrapper<StuWork>().eq("class_id", classId));
+//            workResultMapper.delete(new QueryWrapper<WorkResult>().eq("class_id", classId));
+            return RespBean.success(RespBeanEnum.DELETE_SUCCESS);
         }
-        return RespBean.error();
+        return RespBean.error(RespBeanEnum.DELETE_ERROR);
     }
 
     @Override
     @Transactional
-    public RespBean disposeWork(TeaWork teaWork, Integer[] classIds, String teaId) {
-        // 这里有错 要判断这个作业是否存在(根据teaId 和 作业标题)  所以作业标题最好是一个下拉框(固定选择)
-        teaWork.setTeaId(teaId);
-        String workTitle = teaWork.getWorkTitle();
-        String path = resource + "/" + teaId;
-        File workDir = new File(path, workTitle);
-        LocalDateTime now = LocalDateTime.now();
-        teaWork.setCreateTime(now);
-        if (!workDir.exists()) {
-            workDir.mkdirs();
+    public RespBean disposeWork(String workTitle, String workDescribe, LocalDateTime endTime, Integer[] classIds, String teaId) {
+        // 查该作业是否存在
+        TeaWork oneWork = teaWorkMapper.selectOne(new QueryWrapper<TeaWork>().eq("work_title", workTitle).eq("tea_id", teaId));
+        if (oneWork == null) {
+            TeaWork teaWork = new TeaWork();
+            teaWork.setTeaId(teaId);
+            teaWork.setWorkTitle(workTitle);
+            teaWork.setWorkDescribe(workDescribe);
+            String path = resource + "/" + teaId;
+            File workDir = new File(path, workTitle);
+            if (!workDir.exists()) {
+                workDir.mkdirs();
+            }
+            teaWork.setWorkDir(path + "/" + workTitle);
+            teaWorkMapper.insert(teaWork);
+        } else {
+            oneWork.setWorkDescribe(workDescribe);
+            teaWorkMapper.updateById(oneWork);
         }
-        String workDirPath = workDir.getPath();
-        teaWork.setWorkDir(workDirPath);
-        if (teaWorkMapper.insert(teaWork) == 1) {
-            TeaWork work = teaWorkMapper.selectOne(new QueryWrapper<TeaWork>().eq("create_time", now));
-            Integer workId = work.getWorkId();
-            for (Integer classId : classIds) {
-                ClassWork classWork = new ClassWork();
-                classWork.setWorkId(work.getWorkId());
-                classWork.setTeaId(teaId);
-                classWork.setClassId(classId);
-                classWorkMapper.insert(classWork);
 
-                List<Student> students = studentMapper.selectList(new QueryWrapper<Student>().eq("stu_class_id", classId));
-                for (Student student : students) {
-                    StuWork stuWork = new StuWork();
-                    stuWork.setStuId(student.getStuId());
-                    stuWork.setWorkId(workId);
-                    stuWork.setClassId(classId);
-                    stuWorkMapper.insert(stuWork);
-                }
+        TeaWork work = teaWorkMapper.selectOne(new QueryWrapper<TeaWork>().eq("work_title", workTitle).eq("tea_id", teaId));
+        Integer workId = work.getWorkId();
+        for (Integer classId : classIds) {
+            // 该班级已经布置过了,删除重新布置,前端要做确认操作
+            classWorkMapper.delete(new QueryWrapper<ClassWork>().eq("class_id", classId).eq("work_id", workId));
+            stuWorkMapper.delete(new QueryWrapper<StuWork>().eq("work_id", workId).eq("class_id", classId));
+            ClassWork classWork = new ClassWork();
+            classWork.setWorkId(work.getWorkId());
+            classWork.setTeaId(teaId);
+            classWork.setClassId(classId);
+            classWork.setEndTime(endTime);
+            classWorkMapper.insert(classWork);
+
+            List<Student> students = studentMapper.selectList(new QueryWrapper<Student>().eq("stu_class_id", classId));
+            for (Student student : students) {
+                StuWork stuWork = new StuWork();
+                stuWork.setWorkName("未提交");
+                stuWork.setStuId(student.getStuId());
+                stuWork.setWorkId(workId);
+                stuWork.setClassId(classId);
+                stuWorkMapper.insert(stuWork);
             }
 
             // 作业展示是按班级展示,但查重会查做这个作业的所有学生
-            workResultMapper.delete(new QueryWrapper<WorkResult>().eq("work_id",workId));
+            workResultMapper.delete(new QueryWrapper<WorkResult>().eq("work_id", workId));
             List<StuWork> stuWorks = stuWorkMapper.selectList(new QueryWrapper<StuWork>().eq("work_id", workId));
             int size = stuWorks.size();
             for (int i = 0; i < size - 1; i++) {
                 for (int j = i + 1; j < size; j++) {
                     WorkResult workResult = new WorkResult();
                     workResult.setWorkId(workId);
+//                    workResult.setClassId(classId);
                     workResult.setWorkFirstId(stuWorks.get(i).getId());
                     workResult.setWorkSecondId(stuWorks.get(j).getId());
                     workResultMapper.insert(workResult);
                 }
             }
-
         }
 
+
+        return RespBean.success(RespBeanEnum.DISPOSE_SUCCESS);
+
     }
+
+    @Override
+    @Transactional
+    public RespBean deleteWorkById(Integer workId) {
+        TeaWork teaWork = teaWorkMapper.selectById(workId);
+        if (teaWork != null) {
+            File file = new File(teaWork.getWorkDir());
+            if (file.exists()) {
+                file.delete();
+            }
+
+            classWorkMapper.delete(new QueryWrapper<ClassWork>().eq("work_id", workId));
+            stuWorkMapper.delete(new QueryWrapper<StuWork>().eq("work_id", workId));
+            workResultMapper.delete(new QueryWrapper<WorkResult>().eq("work_id", workId));
+            teaWorkMapper.deleteById(workId);
+            return RespBean.success(RespBeanEnum.DELETE_SUCCESS);
+        }
+        return RespBean.error(RespBeanEnum.DELETE_ERROR);
+    }
+
+    @Override
+    @Transactional
+    public RespBean deleteWorkByClass(Integer classWorkId) {
+        ClassWork classWork = classWorkMapper.selectById(classWorkId);
+        if (classWork != null) {
+            Integer classId = classWork.getClassId();
+            Integer workId = classWork.getWorkId();
+
+            List<StuWork> stuWorks = stuWorkMapper.selectList(new QueryWrapper<StuWork>().eq("class_id", classId).eq("work_id", workId));
+            this.deleteWorkByStuWorks(stuWorks);
+//            workResultMapper.delete(new QueryWrapper<WorkResult>().eq("class_id", classId).eq("work_id", workId));
+            classWorkMapper.deleteById(classWorkId);
+            stuWorkMapper.delete(new QueryWrapper<StuWork>().eq("class_id", classId).eq("work_id", workId));
+            return RespBean.success(RespBeanEnum.DELETE_SUCCESS);
+        }
+        return RespBean.error(RespBeanEnum.DELETE_ERROR);
+    }
+
+//    @Override
+//    @Transactional
+//    public RespBean updateWorkTitle(Integer workId, String workTitle) {
+//        TeaWork teaWork = teaWorkMapper.selectById(workId);
+//        teaWork.setWorkTitle(workTitle);
+//        String workDir = teaWork.getWorkDir();
+//        // 建立新的文件夹
+//        String newWorkDir=workDir.substring(0,workDir.lastIndexOf('/')+1)+workTitle;
+//        File file1 = new File(newWorkDir);
+//        if(!file1.exists()){
+//            file1.mkdirs();
+//        }
+//        File file = new File(workDir);
+//        if (file.exists()) {
+//            List<StuWork> stuWorks = stuWorkMapper.selectList(new QueryWrapper<StuWork>().eq("work_id", workId));
+//            for (StuWork stuWork : stuWorks) {
+//                String workUrl = stuWork.getWorkUrl();
+//                String substring = workUrl.substring(workUrl.indexOf('/'));
+//                stuWork.setWorkUrl(newWorkDir + substring);
+//                stuWorkMapper.updateById(stuWork);
+//            }
+//        }
+//        return RespBean.success(RespBeanEnum.UPDATE_SUCCESS);
+//    }
 
     private void cleanFiles(File resDir) {
         if (resDir.listFiles() != null) {
@@ -379,24 +444,38 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
         return result;
     }
 
-    private boolean deleteWorkNormal(Integer workId,String name){
-        WorkClass workClass = workClassMapper.selectById(workId);
-        String resourceWorkDir = workClass.getWorkDir();
-        File file = new File(resourceWorkDir);
-        if(file.exists()){
-            file.delete();
+//    private boolean deleteWorkNormal(Integer workId, String name) {
+//        WorkClass workClass = workClassMapper.selectById(workId);
+//        String resourceWorkDir = workClass.getWorkDir();
+//        File file = new File(resourceWorkDir);
+//        if (file.exists()) {
+//            file.delete();
+//        }
+//        String workDescribe = workClass.getWorkDescribe();
+//        String resultWorkDir = result + "/" + name + "/" + workDescribe;
+//        File resultFile = new File(resultWorkDir);
+//        if (resultFile.exists()) {
+//            resultFile.delete();
+//        }
+//        if (workClassMapper.deleteById(workId) == 1) {
+//            stuWorkMapper.delete(new QueryWrapper<StuWork>().eq("work_id", workId));
+//            workResultMapper.delete(new QueryWrapper<WorkResult>().eq("work_id", workId));
+//            return true;
+//        }
+//        return false;
+//    }
+
+    private void deleteWorkByStuWorks(List<StuWork> stuWorks) {
+        for (StuWork stuWork : stuWorks) {
+            String workUrl = stuWork.getWorkUrl();
+            if (workUrl != null && !workUrl.equals("null")) {
+                File file = new File(workUrl);
+                if (file.exists()) {
+                    file.delete();
+                }
+            }
+            Integer id = stuWork.getId();
+            workResultMapper.delete(new QueryWrapper<WorkResult>().eq("work_first_id", id).or().eq("work_second_id", id));
         }
-        String workDescribe = workClass.getWorkDescribe();
-        String resultWorkDir=result+"/"+name+"/"+workDescribe;
-        File resultFile = new File(resultWorkDir);
-        if(resultFile.exists()){
-            resultFile.delete();
-        }
-        if(workClassMapper.deleteById(workId)==1){
-            stuWorkMapper.delete(new QueryWrapper<StuWork>().eq("work_id", workId));
-            workResultMapper.delete(new QueryWrapper<WorkResult>().eq("work_id", workId));
-            return true;
-        }
-        return false;
     }
 }

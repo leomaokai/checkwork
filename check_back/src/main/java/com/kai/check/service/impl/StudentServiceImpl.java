@@ -98,10 +98,10 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
         }
         // 将文件信息存入数据库
         StuWork stuWork = stuWorkMapper.selectOne(new QueryWrapper<StuWork>().eq("work_id", workId).eq("stu_id", name));
-        stuWork.setWorkName(newName).setWorkUrl(workDir + "/" + newName).setWorkExt(ext).setIsCommit(1);
+        stuWork.setWorkName(newName).setWorkUrl(workDir + "/" + newName).setWorkExt(ext).setIsCommit("已提交");
         if(LocalDateTime.now().isAfter(endTime)){
             // 超时提交
-            stuWork.setIsCommit(2);
+            stuWork.setIsCommit("超时提交");
         }
         if (stuWorkMapper.updateById(stuWork) == 1) {
             return RespBean.success();

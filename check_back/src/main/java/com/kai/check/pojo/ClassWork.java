@@ -41,6 +41,10 @@ public class ClassWork implements Serializable {
     @ApiModelProperty(value = "老师id")
     private String teaId;
 
+    @ApiModelProperty(value = "截止时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    private LocalDateTime endTime;
+
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     @TableField(fill = FieldFill.INSERT)
@@ -51,6 +55,12 @@ public class ClassWork implements Serializable {
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
+    @ApiModelProperty(value = "班级")
+    @TableField(exist = false)
+    private ClassTea classTea;
 
+    @ApiModelProperty(value = "作业")
+    @TableField(exist = false)
+    private TeaWork teaWork;
 
 }

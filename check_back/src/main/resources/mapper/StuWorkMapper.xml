@@ -27,5 +27,16 @@
         WHERE
             stu_id=#{stuId}
     </delete>
+    <select id="getClassStudentWorks" resultType="com.kai.check.pojo.StuWork">
+        SELECT
+            id,work_name,stu_id,is_commit,update_time
+        FROM
+            t_stu_work
+        WHERE
+            class_id=#{classId}
+          AND
+            work_id=#{workId}
+        ORDER BY stu_id
+    </select>
 
 </mapper>

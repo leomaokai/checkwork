@@ -50,8 +50,8 @@ public class StuWork implements Serializable {
     @ApiModelProperty(value = "作业ext")
     private String workExt;
 
-    @ApiModelProperty(value = "0未提交,1提交")
-    private Integer isCommit;
+    @ApiModelProperty(value = "未提交,已提交,超时提交")
+    private String isCommit;
 
     @ApiModelProperty(value = "创建时间")
     @TableField(fill = FieldFill.INSERT)
@@ -61,9 +61,12 @@ public class StuWork implements Serializable {
     @TableField(fill=FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
-    @ApiModelProperty(value = "作业详情")
-    @TableField(exist = false)
-    private WorkClass workClass;
+//    @ApiModelProperty(value = "作业详情")
+//    @TableField(exist = false)
+//    private WorkClass workClass;
+//    @ApiModelProperty(value = "作业所属学生")
+//    @TableField(exist = false)
+//    private Student student;
 
 
 }

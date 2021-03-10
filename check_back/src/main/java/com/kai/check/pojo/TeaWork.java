@@ -44,12 +44,9 @@ public class TeaWork implements Serializable {
     @ApiModelProperty(value = "作业路径")
     private String workDir;
 
-    @ApiModelProperty(value = "截至时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
-    private LocalDateTime endTime;
-
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新时间")

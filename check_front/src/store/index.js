@@ -14,9 +14,9 @@ export default new Vuex.Store({
       state.route = data;
       state.flag = 1;
     },
-    initClass(state, data) {
-      state.classes = data;
-    }
+    // initClass(state, data) {
+    //   state.classes = data;
+    // }
   },
   actions: {
   },

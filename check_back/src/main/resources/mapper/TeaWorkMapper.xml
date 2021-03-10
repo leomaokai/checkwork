@@ -9,7 +9,7 @@
         <result column="work_title" property="workTitle" />
         <result column="work_describe" property="workDescribe" />
         <result column="work_dir" property="workDir" />
-        <result column="end_time" property="endTime" />
+
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>

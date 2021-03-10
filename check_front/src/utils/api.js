@@ -23,7 +23,7 @@ axios.interceptors.response.use(success => {
     if (success.status && success.status == 200) {
         // 后端传来失败响应码
         let code = success.data.code;
-        let codes = [500, 400, 401, 403, 406, 500210, 500211, 500212, 500213, 500214, 500215, 500216, 500217, 500218, 500219];
+        let codes = [500, 400, 401, 403, 406, 500210, 500211, 500212, 500213, 500214, 500215, 500216, 500217, 500218, 500219, 500220];
         if (codes.includes(code)) {
             // 弹出后端传来的错误提示
             Message.error({ message: success.data.message });

@@ -118,7 +118,7 @@ export default {
                     this.$router.replace("/student");
                     break;
                   case "2":
-                    this.$router.replace("/teacher");
+                    this.$router.replace("/teacher/class");
                     break;
                   case "1":
                     this.$router.replace("/admin");
