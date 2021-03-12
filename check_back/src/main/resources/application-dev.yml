@@ -21,6 +21,10 @@ spring:
       connection-timeout: 30000
       # 测试连接是否可用的查询语句
       connection-test-query: SELECT 1
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 2MB
 
 # mybatis-plus配置
 mybatis-plus:
@@ -54,4 +58,6 @@ kai:
   # 指定结果存放的路径
   result: /check_result
   # 设置相似度检查门限参数值
-  sim: 50
+  sim: 1
+  # 查重结果最大值,超过返回
+  resultMax: 80

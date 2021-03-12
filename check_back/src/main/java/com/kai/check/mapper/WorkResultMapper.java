@@ -19,4 +19,6 @@ public interface WorkResultMapper extends BaseMapper<WorkResult> {
     void deleteByWorkId(@Param("workId") Integer workId);
 
     IPage<WorkResult> listCheckResult(Page<WorkResult> workResultPage,@Param("id") Integer workId);
+
+    void deleteStuWorkId(@Param("stuWorkId") Integer stuWorkId);
 }

@@ -11,6 +11,7 @@ import com.kai.check.service.IUserService;
 import com.kai.check.utils.RespBean;
 import com.kai.check.utils.RespBeanEnum;
 import com.kai.check.utils.RespPageBean;
+import com.kai.check.utils.SecretUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -76,12 +77,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public RespBean login(String username, String password, String code, HttpServletRequest request) {
+
         //验证码校验
         String captcha = (String) request.getSession().getAttribute("captcha");
-        if (code == null || code.isEmpty() || !captcha.equalsIgnoreCase(code)) {
+        if (captcha == null || code == null || code.isEmpty() || !captcha.equalsIgnoreCase(code)) {
             return RespBean.error(RespBeanEnum.BIND_ERROR);
         }
         // 登录
+        // 解密
+//        password = SecretUtil.desEncrypt(password);
+//        if (password == null) {
+//            return RespBean.error(RespBeanEnum.LOGIN_ERROR);
+//        }
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         if (null == userDetails || !passwordEncoder.matches(password, userDetails.getPassword())) {
             return RespBean.error(RespBeanEnum.LOGIN_ERROR);
@@ -104,6 +111,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     @Transactional
     public RespBean updatePassword(String oldPassword, String newPassword, String name) {
+        // 解密
+//        oldPassword = SecretUtil.desEncrypt(oldPassword);
+//        newPassword = SecretUtil.desEncrypt(newPassword);
         User user = this.getUserByUsername(name);
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if (passwordEncoder.matches(oldPassword, user.getPassword())) {
@@ -175,21 +185,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public RespBean initStuById(String studentId) {
         User user = userMapper.selectById(studentId);
         if (user.getUserRoleId() != 3) {
-            return RespBean.error(RespBeanEnum.FAIL);
+            return RespBean.error(RespBeanEnum.INIT_ERROR);
         }
         user.setPassword(passwordEncoder.encode(user.getUsername()));
         if (userMapper.updateById(user) == 1) {
-            return RespBean.success();
+            return RespBean.success(RespBeanEnum.INIT_SUCCESS);
         }
-        return RespBean.error();
+        return RespBean.error(RespBeanEnum.INIT_ERROR);
     }
 
     @Override
     @Transactional
-    public RespBean initUserPassword(String username){
+    public RespBean initUserPassword(String username) {
         User user = userMapper.selectById(username);
         user.setPassword(passwordEncoder.encode(user.getUsername()));
-        if(userMapper.updateById(user)==1){
+        if (userMapper.updateById(user) == 1) {
             return RespBean.success(RespBeanEnum.INIT_SUCCESS);
         }
         return RespBean.error(RespBeanEnum.INIT_ERROR);
@@ -226,9 +236,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         teacherMapper.deleteById(id);
         if (userMapper.deleteById(id) == 1) {
-            return RespBean.success();
+            return RespBean.success(RespBeanEnum.DELETE_SUCCESS);
         }
-        return RespBean.error();
+        return RespBean.error(RespBeanEnum.DELETE_ERROR);
     }
 
     @Override

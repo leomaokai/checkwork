@@ -72,6 +72,7 @@
 </template>
 
 <script>
+import { Encrypt } from "../utils/secret.js";
 export default {
   name: "Home",
   data() {
@@ -134,7 +135,13 @@ export default {
     changePwd(changePwdModel) {
       this.$refs[changePwdModel].validate((valid) => {
         if (valid) {
-          this.$put("/user/update", this.changePwdModel).then((res) => {
+          let updatePwd = {
+            // oldPassword:  Encrypt(this.changePwdModel.oldPassword),
+            // newPassword:  Encrypt(this.changePwdModel.newPassword),
+            oldPassword: this.changePwdModel.oldPassword,
+            newPassword: this.changePwdModel.newPassword,
+          };
+          this.$put("/user/update", updatePwd).then((res) => {
             if (res != undefined && res.code == 200202) {
               this.changePwdFormVisible = false;
               window.sessionStorage.clear();

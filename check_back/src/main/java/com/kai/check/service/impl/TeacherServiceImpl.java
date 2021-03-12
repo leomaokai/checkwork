@@ -6,6 +6,7 @@ import com.kai.check.mapper.*;
 import com.kai.check.pojo.*;
 import com.kai.check.service.ITeacherService;
 import com.kai.check.service.IUserService;
+import com.kai.check.utils.CheckCode;
 import com.kai.check.utils.RespBean;
 import com.kai.check.utils.RespBeanEnum;
 import jplag.ExitException;
@@ -278,27 +279,27 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
             List<Student> students = studentMapper.selectList(new QueryWrapper<Student>().eq("stu_class_id", classId));
             for (Student student : students) {
                 StuWork stuWork = new StuWork();
-                stuWork.setWorkName("未提交");
                 stuWork.setStuId(student.getStuId());
                 stuWork.setWorkId(workId);
                 stuWork.setClassId(classId);
                 stuWorkMapper.insert(stuWork);
             }
 
-            // 作业展示是按班级展示,但查重会查做这个作业的所有学生
-            workResultMapper.delete(new QueryWrapper<WorkResult>().eq("work_id", workId));
-            List<StuWork> stuWorks = stuWorkMapper.selectList(new QueryWrapper<StuWork>().eq("work_id", workId));
-            int size = stuWorks.size();
-            for (int i = 0; i < size - 1; i++) {
-                for (int j = i + 1; j < size; j++) {
-                    WorkResult workResult = new WorkResult();
-                    workResult.setWorkId(workId);
-//                    workResult.setClassId(classId);
-                    workResult.setWorkFirstId(stuWorks.get(i).getId());
-                    workResult.setWorkSecondId(stuWorks.get(j).getId());
-                    workResultMapper.insert(workResult);
-                }
-            }
+            // 已修改为在学生交作业时创建作业结果
+//            // 作业展示是按班级展示,但查重会查做这个作业的所有学生
+//            workResultMapper.delete(new QueryWrapper<WorkResult>().eq("work_id", workId));
+//            List<StuWork> stuWorks = stuWorkMapper.selectList(new QueryWrapper<StuWork>().eq("work_id", workId));
+//            int size = stuWorks.size();
+//            for (int i = 0; i < size - 1; i++) {
+//                for (int j = i + 1; j < size; j++) {
+//                    WorkResult workResult = new WorkResult();
+//                    workResult.setWorkId(workId);
+////                    workResult.setClassId(classId);
+//                    workResult.setWorkFirstId(stuWorks.get(i).getId());
+//                    workResult.setWorkSecondId(stuWorks.get(j).getId());
+//                    workResultMapper.insert(workResult);
+//                }
+//            }
         }
 
 
@@ -315,7 +316,6 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
             if (file.exists()) {
                 file.delete();
             }
-
             classWorkMapper.delete(new QueryWrapper<ClassWork>().eq("work_id", workId));
             stuWorkMapper.delete(new QueryWrapper<StuWork>().eq("work_id", workId));
             workResultMapper.delete(new QueryWrapper<WorkResult>().eq("work_id", workId));
@@ -343,6 +343,54 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
         return RespBean.error(RespBeanEnum.DELETE_ERROR);
     }
 
+    @Override
+    @Transactional
+    public RespBean deleteStudent(String studentId) {
+        if (userMapper.deleteById(studentId) == 1) {
+            List<StuWork> stuWorks = stuWorkMapper.selectList(new QueryWrapper<StuWork>().eq("stu_id", studentId));
+            for (StuWork stuWork : stuWorks) {
+                Integer stuWorkId = stuWork.getId();
+                workResultMapper.deleteStuWorkId(stuWorkId);
+            }
+            stuWorkMapper.delete(new QueryWrapper<StuWork>().eq("stu_id", studentId));
+            return RespBean.success(RespBeanEnum.DELETE_SUCCESS);
+        }
+        return RespBean.error(RespBeanEnum.DELETE_ERROR);
+    }
+
+    // 在学生交作业时查重,老师只查看结果
+//    @Override
+//    @Transactional
+//    public RespBean checkCode(Integer workId, String name) {
+//        List<WorkResult> workResults = workResultMapper.selectList(new QueryWrapper<WorkResult>().eq("work_id", workId));
+//        TeaWork teaWork = teaWorkMapper.selectById(workId);
+//
+//        if (workResults.isEmpty() || teaWork == null) {
+//            return RespBean.error(RespBeanEnum.CHECK_ERROR);
+//        }
+//        // 结果路径
+//        String resultPath = result + "name" + teaWork.getWorkTitle();
+//        // 作业目录
+//        String resourcePath = teaWork.getWorkDir();
+//        // 查重
+//        for (WorkResult workResult : workResults) {
+//            Integer workFirstId = workResult.getWorkFirstId();
+//            Integer workSecondId = workResult.getWorkSecondId();
+//            StuWork stuWork1 = stuWorkMapper.selectById(workFirstId);
+//            StuWork stuWork2 = stuWorkMapper.selectById(workSecondId);
+//            // 结果表中存在的作业数据因为是在学生交作业时生成的,所以一定存在
+////            if (stuWork1 == null || stuWork2 == null || stuWork1.getIsCommit().equals("未提交") || stuWork2.getIsCommit().equals("未提交")) {
+////                continue;
+////            }
+//            String lang = stuWork1.getWorkExt();
+//            String workName1 = stuWork1.getWorkName();
+//            String workName2 = stuWork2.getWorkName();
+//        }
+//
+//        return null;
+//    }
+
+    // 修改作业标题存在问题??...
 //    @Override
 //    @Transactional
 //    public RespBean updateWorkTitle(Integer workId, String workTitle) {
@@ -368,81 +416,82 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
 //        return RespBean.success(RespBeanEnum.UPDATE_SUCCESS);
 //    }
 
-    private void cleanFiles(File resDir) {
-        if (resDir.listFiles() != null) {
-            File[] files = resDir.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    file.delete();
-                }
-            }
-        }
-    }
-
-    private String check(String resourcePath, String resultPath, String workName1, String workName2, String lang) {
-        // 如果已经查重过(结果文件夹有文件),将结果清除重新查重
-        File resDir = new File(resultPath);
-        cleanFiles(resDir);
-        try {
-            // 查重
-            List<String> args = new ArrayList<>();
-            // 指定语言
-            args.add("-l");
-            // java只能检测java9以后版本
-            if ("java".equals(lang)) {
-                args.add("java19");
-            } else if ("cpp".equals(lang) || "c".equals(lang)) {
-                args.add("c/c++");
-            } else if ("py".equals(lang)) {
-                args.add("python3");
-            } else {
-                args.add(lang);
-            }
-            args.add("-r");
-            args.add(resultPath);
-            // 设置相似度检查门限参数值
-//            args.add("-m");
-//            args.add(sim + "%");
-            // 指定源文件存放路径
-            args.add("-s");
-            args.add(resourcePath);
-            args.add("-c");
-            args.add(workName1);
-            args.add(workName2);
-            String[] toPass = new String[args.size()];
-            toPass = args.toArray(toPass);
-            new Program(new CommandLineOptions(toPass)).run();
-        } catch (ExitException e) {
-            e.printStackTrace();
-        }
-        return getCheckResult(resultPath);
-    }
-
-    private String getCheckResult(String resultPath) {
-        String result = "-1";
-        File resultFile = new File(resultPath, "matches_avg.csv");
-        if (!resultFile.exists()) {
-            return result;
-        }
-        try (BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(resultFile));) {
-            byte[] bytes = new byte[(int) resultFile.length()];
-            bufferedInputStream.read(bytes);
-            StringBuilder resString = new StringBuilder(new String(bytes));
-            char c = ';';
-            Integer[] integers = new Integer[4];
-            int index = 0;
-            int length = resString.length();
-            for (int i = 0; i < length; i++) {
-                if (c == resString.charAt(i)) {
-                    integers[index++] = i;
-                }
-            }
-            result = resString.substring(integers[2] + 1, integers[3]);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
+    // 重重模块改成了工具栏
+//    private void cleanFiles(File resDir) {
+//        if (resDir.listFiles() != null) {
+//            File[] files = resDir.listFiles();
+//            if (files != null) {
+//                for (File file : files) {
+//                    file.delete();
+//                }
+//            }
+//        }
+//    }
+//
+//    private String check(String resourcePath, String resultPath, String workName1, String workName2, String lang) {
+//        // 如果已经查重过(结果文件夹有文件),将结果清除重新查重
+//        File resDir = new File(resultPath);
+//        cleanFiles(resDir);
+//        try {
+//            // 查重
+//            List<String> args = new ArrayList<>();
+//            // 指定语言
+//            args.add("-l");
+//            // java只能检测java9以后版本
+//            if ("java".equals(lang)) {
+//                args.add("java19");
+//            } else if ("cpp".equals(lang) || "c".equals(lang)) {
+//                args.add("c/c++");
+//            } else if ("py".equals(lang)) {
+//                args.add("python3");
+//            } else {
+//                args.add(lang);
+//            }
+//            args.add("-r");
+//            args.add(resultPath);
+//            // 设置相似度检查门限参数值
+////            args.add("-m");
+////            args.add(sim + "%");
+//            // 指定源文件存放路径
+//            args.add("-s");
+//            args.add(resourcePath);
+//            args.add("-c");
+//            args.add(workName1);
+//            args.add(workName2);
+//            String[] toPass = new String[args.size()];
+//            toPass = args.toArray(toPass);
+//            new Program(new CommandLineOptions(toPass)).run();
+//        } catch (ExitException e) {
+//            e.printStackTrace();
+//        }
+//        return getCheckResult(resultPath);
+//    }
+//
+//    private String getCheckResult(String resultPath) {
+//        String result = "-1";
+//        File resultFile = new File(resultPath, "matches_avg.csv");
+//        if (!resultFile.exists()) {
+//            return result;
+//        }
+//        try (BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(resultFile));) {
+//            byte[] bytes = new byte[(int) resultFile.length()];
+//            bufferedInputStream.read(bytes);
+//            StringBuilder resString = new StringBuilder(new String(bytes));
+//            char c = ';';
+//            Integer[] integers = new Integer[4];
+//            int index = 0;
+//            int length = resString.length();
+//            for (int i = 0; i < length; i++) {
+//                if (c == resString.charAt(i)) {
+//                    integers[index++] = i;
+//                }
+//            }
+//            result = resString.substring(integers[2] + 1, integers[3]);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return result;
+//    }
 
 //    private boolean deleteWorkNormal(Integer workId, String name) {
 //        WorkClass workClass = workClassMapper.selectById(workId);
@@ -468,14 +517,12 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     private void deleteWorkByStuWorks(List<StuWork> stuWorks) {
         for (StuWork stuWork : stuWorks) {
             String workUrl = stuWork.getWorkUrl();
-            if (workUrl != null && !workUrl.equals("null")) {
-                File file = new File(workUrl);
-                if (file.exists()) {
-                    file.delete();
-                }
-            }
+            CheckCode.deleteWorkFileByPath(workUrl);
+            String pdfPath = stuWork.getPdfPath();
+            CheckCode.deleteWorkFileByPath(pdfPath);
             Integer id = stuWork.getId();
-            workResultMapper.delete(new QueryWrapper<WorkResult>().eq("work_first_id", id).or().eq("work_second_id", id));
+            workResultMapper.deleteStuWorkId(id);
         }
     }
+
 }

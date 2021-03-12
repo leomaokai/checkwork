@@ -40,12 +40,15 @@
         type="primary"
         style="width: 100%"
         @click="submitLogin('loginForm')"
+        @keyup.enter="submitLogin('loginForm')"
         >登录</el-button
       >
     </el-form>
   </div>
 </template>
 <script>
+import { Encrypt } from "../utils/secret.js";
+
 export default {
   name: "Login",
   data() {
@@ -81,6 +84,14 @@ export default {
       this.loading = true;
       this.$refs[loginForm].validate((valid) => {
         if (valid) {
+          let loginData = {
+            username: this.loginForm.username,
+            // password: Encrypt(this.loginForm.password),
+            password: this.loginForm.password,
+            code: this.loginForm.code,
+          };
+          this.loginForm.password = "";
+          this.loginForm.code = "";
           // this.$message.success({
           //   message: "登录成功",
           //   type: "success",
@@ -88,8 +99,10 @@ export default {
           // this.$http.post("/user/login", this.loginForm).then((resp) => {
           //   alert(resp.data);
           // });
-          this.$post("/user/login", this.loginForm).then((resp) => {
+          this.$post("/user/login", loginData).then((resp) => {
             this.loading = false;
+            this.updateCaptcha();
+
             //alert(resp.obj.token);
             if (resp) {
               // 存储用户token
@@ -115,7 +128,7 @@ export default {
               if (path == "/" || path == undefined)
                 switch (window.sessionStorage.getItem("roleId")) {
                   case "3":
-                    this.$router.replace("/student");
+                    this.$router.replace("/student/info");
                     break;
                   case "2":
                     this.$router.replace("/teacher/class");

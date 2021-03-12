@@ -19,4 +19,6 @@ public interface StuWorkMapper extends BaseMapper<StuWork> {
     void deleteByStuId(@Param("stuId") String stuId);
 
     IPage<StuWork> getClassStudentWorks(Page<StuWork> stuWorkPage,@Param("classId") Integer classId,@Param("workId") Integer workId);
+
+    IPage<StuWork> selectStuWorks(Page<StuWork> stuWorkPage,@Param("stuId") String name);
 }

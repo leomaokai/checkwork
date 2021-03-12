@@ -2,11 +2,12 @@
   <div>
     <el-container>
       <el-aside width="200px">
-        <el-menu router>
+        <el-menu router default-active="1">
           <el-submenu
             index="1"
             v-for="(item1, indexi) in route.children"
             :key="indexi"
+            v-show="item1.routerId == 3"
           >
             <template slot="title"
               ><i class="el-icon-menu"></i>

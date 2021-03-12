@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
@@ -23,6 +24,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 @TableName("t_work_result")
 @ApiModel(value="WorkResult对象", description="")
+@Accessors(chain = true)
 public class WorkResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -49,9 +51,9 @@ public class WorkResult implements Serializable {
 
     @ApiModelProperty(value = "学生作业1")
     @TableField(exist = false)
-    private StuWork stuWorkFirst;
+    private String stuWorkFirstName;
 
     @ApiModelProperty(value = "学生作业2")
     @TableField(exist = false)
-    private StuWork stuWorkSecond;
+    private String stuWorkSecondName;
 }

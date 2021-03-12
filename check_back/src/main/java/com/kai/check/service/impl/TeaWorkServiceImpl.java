@@ -35,12 +35,18 @@ public class TeaWorkServiceImpl extends ServiceImpl<TeaWorkMapper, TeaWork> impl
         TeaWork teaWork = new TeaWork();
         teaWork.setTeaId(name);
         teaWork.setWorkTitle(workTitle);
-        String path = resource + "/" + name;
-        File workDir = new File(path, workTitle);
-        if (!workDir.exists()) {
-            workDir.mkdirs();
+        StringBuilder pathBuilder = new StringBuilder(50);
+        pathBuilder.append(resource).append("/").append(name).append("/").append(workTitle);
+        String path = pathBuilder.toString();
+        File workDir1 = new File(path, "code");
+        if (!workDir1.exists()) {
+            workDir1.mkdirs();
         }
-        teaWork.setWorkDir(path + "/" + workTitle);
+        File workDir2 = new File(path, "pdf");
+        if (!workDir2.exists()) {
+            workDir2.mkdirs();
+        }
+        teaWork.setWorkDir(path);
         if (teaWorkMapper.insert(teaWork) == 1) {
             return RespBean.success(RespBeanEnum.INSERT_SUCCESS);
         }

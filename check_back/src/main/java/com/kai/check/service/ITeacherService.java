@@ -1,13 +1,10 @@
 package com.kai.check.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.kai.check.pojo.StuWork;
 import com.kai.check.pojo.Teacher;
-import com.kai.check.pojo.WorkClass;
 import com.kai.check.utils.RespBean;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * <p>
@@ -43,6 +40,10 @@ public interface ITeacherService extends IService<Teacher> {
     RespBean deleteWorkById(Integer workId);
 
     RespBean deleteWorkByClass(Integer classWorkId);
+
+    RespBean deleteStudent(String studentId);
+
+//    RespBean checkCode(Integer workId, String name);
 
 //    RespBean updateWorkTitle(Integer workId, String workTitle);
 

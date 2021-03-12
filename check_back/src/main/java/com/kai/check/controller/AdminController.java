@@ -66,6 +66,9 @@ public class AdminController {
     @ApiOperation(value = "删除教师(包括其班级和学生)")
     @DeleteMapping("/delete/{id}")
     public RespBean deleteTeacher(@PathVariable(value = "id", required = true) String id) {
+        if(id==null){
+            return RespBean.error(RespBeanEnum.DELETE_ERROR);
+        }
         return userService.deleteTeacher(id);
     }
 

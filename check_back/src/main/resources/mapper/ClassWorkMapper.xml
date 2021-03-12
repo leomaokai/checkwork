@@ -33,6 +33,7 @@
             cw.`class_id`,
             ct.`class_name`,
             cw.`end_time`,
+            cw.`create_time`,
             tw.`work_title`,
             tw.`work_describe`
         FROM

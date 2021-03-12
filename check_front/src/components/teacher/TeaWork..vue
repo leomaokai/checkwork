@@ -14,7 +14,7 @@
       <br />
       <div style="margin-top: 15px">
         <el-table :data="classWorkData" stripe style="width: 100%" border>
-          <el-table-column type="index" width="50"> </el-table-column>
+          <el-table-column type="index" width="30"> </el-table-column>
           <el-table-column
             prop="classTea.className"
             label="班级名称"
@@ -28,14 +28,19 @@
           <el-table-column
             prop="teaWork.workDescribe"
             label="作业描述"
-            width="150"
+            width="120"
+          ></el-table-column>
+          <el-table-column
+            prop="createTime"
+            label="创建日期"
+            width="110"
           ></el-table-column>
           <el-table-column
             prop="endTime"
             label="截止日期"
-            width="180"
+            width="110"
           ></el-table-column>
-          <el-table-column width="330">
+          <el-table-column width="250">
             <template slot-scope="scope">
               <el-button
                 size="mini"
@@ -46,14 +51,8 @@
               <el-button
                 size="mini"
                 type="primary"
-                @click="checkClassWork(scope.$index, scope.row)"
-                >查重作业</el-button
-              >
-              <el-button
-                size="mini"
-                type="primary"
                 @click="getCheckResult(scope.$index, scope.row)"
-                >查重结果</el-button
+                >查看查重结果</el-button
               >
             </template>
           </el-table-column>
@@ -93,6 +92,7 @@
       <el-dialog
         title="修改作业截止日期"
         :visible.sync="updateClassWorkEndTimeVisible"
+        width="500px"
       >
         <el-form>
           <el-form-item label="截至日期" required>
@@ -220,8 +220,13 @@
           ></el-table-column>
           <el-table-column
             property="workName"
-            label="作业名"
-            width="200"
+            label="源代码"
+            width="150"
+          ></el-table-column>
+          <el-table-column
+            property="pdfName"
+            label="PDF"
+            width="150"
           ></el-table-column>
           <el-table-column
             property="isCommit"
@@ -242,6 +247,41 @@
         </div>
       </el-dialog>
     </div>
+
+    <!-- 查询查重结果 -->
+    <div>
+      <el-dialog title="作业查重情况" :visible.sync="checkResultVisible">
+        <el-table :data="checkResultData" stripe>
+          <el-table-column
+            property="stuWorkFirstName"
+            label="源代码一"
+            width="250"
+          ></el-table-column>
+          <el-table-column
+            property="stuWorkSecondName"
+            label="源代码二"
+            width="250"
+          ></el-table-column>
+          <el-table-column
+            property="workResult"
+            label="查重结果"
+            width="150"
+          ></el-table-column>
+        </el-table>
+        <div class="block" style="width: auto">
+          <el-pagination
+            @size-change="resHandleSizeChange"
+            @current-change="resHandleCurrentChange"
+            :current-page="resCurrentPage"
+            :page-sizes="resSizes"
+            :page-size="resSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="resTotal"
+          >
+          </el-pagination>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -250,6 +290,14 @@ export default {
   name: "TeaWork",
   data() {
     return {
+      // 查重结果模块
+      checkResultVisible: false,
+      checkResultData: [],
+      currentCheckResultWorkId: "",
+      resCurrentPage: 1,
+      resSizes: [5, 10, 15, 20, 30],
+      resSize: 5,
+      resTotal: 100,
       // 修改作业截止日期
       updateClassWorkEndTimeClassWorkId: "",
       newEndTime: "",
@@ -258,16 +306,16 @@ export default {
       currentClassId: "",
       currentWorkId: "",
       stuCurrentPage: 1,
-      stuSizes: [10, 20, 30, 40, 50],
-      stuSize: 10,
+      stuSizes: [5, 10, 15, 20, 30],
+      stuSize: 5,
       stuTotal: 100,
       classStudentWorksVisible: false,
       classStudentWorksData: [],
       // 查询班级作业模块
       classWorkData: [],
       currentPage: 1,
-      sizes: [2, 10],
-      size: 10,
+      sizes: [5, 10, 15],
+      size: 5,
       total: 100,
       // 布置作业模块
       workTitleOptions: [],
@@ -336,6 +384,28 @@ export default {
     };
   },
   methods: {
+    // 查重结果模块
+    initCheckResult() {
+      let url =
+        "currentPage=" +
+        this.resCurrentPage +
+        "&size=" +
+        this.resSize +
+        "&workId=" +
+        this.currentCheckResultWorkId;
+      this.$get("/teacher/checkResult?" + url).then((res) => {
+        this.checkResultData = res.data;
+        this.resTotal = res.total;
+      });
+    },
+    resHandleSizeChange(val) {
+      this.resSize = val;
+      this.initCheckResult();
+    },
+    resHandleCurrentChange(val) {
+      this.resCurrentPage = val;
+      this.initCheckResult();
+    },
     // 修改作业截止日期
     checkUpdateClassWorkEndTime() {
       // updateClassWorkEndTimeClassWorkId
@@ -406,8 +476,11 @@ export default {
       this.initClassStudentWorks();
       this.classStudentWorksVisible = true;
     },
-    checkClassWork(index, row) {},
-    getCheckResult(index, row) {},
+    getCheckResult(index, row) {
+      this.checkResultVisible = true;
+      this.currentCheckResultWorkId = row.workId;
+      this.initCheckResult();
+    },
     handleEditClassWork(index, row) {
       this.updateClassWorkEndTimeClassWorkId = row.id;
       this.updateClassWorkEndTimeVisible = true;

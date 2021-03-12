@@ -69,8 +69,13 @@
       </div>
     </div>
 
+    <!-- 创建班级 -->
     <div>
-      <el-dialog title="创建班级" :visible.sync="createClassFormVisible">
+      <el-dialog
+        title="创建班级"
+        :visible.sync="createClassFormVisible"
+        width="500px"
+      >
         <el-form :model="createClassFormModel">
           <el-form-item label="班级名称" :label-width="formLabelWidth">
             <el-input
@@ -87,6 +92,7 @@
       </el-dialog>
     </div>
 
+    <!-- 班级学生信息 -->
     <div>
       <el-dialog
         title="班级学生信息"
@@ -150,10 +156,12 @@
       </el-dialog>
     </div>
 
+    <!-- 添加学生 -->
     <div>
       <el-dialog
         :title="insertStuToClass"
         :visible.sync="insertStudentsToClassVisible"
+        width="500px"
       >
         <el-form
           :model="insertStudentsToClassModel"
@@ -217,11 +225,12 @@ export default {
       },
 
       // 查询班级学生模块
+      currentClassId: "",
       studentData: [],
       selectStudentsVisible: false,
       stuCurrentPage: 1,
-      stuSizes: [10, 20, 30, 40, 50],
-      stuSize: 10,
+      stuSizes: [5, 10, 15, 20, 25],
+      stuSize: 5,
       stuTotal: 100,
 
       // 查询班级模块
@@ -232,8 +241,8 @@ export default {
         className: "",
       },
       currentPage: 1,
-      sizes: [10, 20, 30, 40, 50],
-      size: 10,
+      sizes: [5, 10, 15, 20, 25],
+      size: 5,
       total: 100,
     };
   },
@@ -255,6 +264,7 @@ export default {
               );
               this.$post("/teacher/insertStudent?" + url).then((res) => {
                 this.insertStudentsToClassModel.studentIds = [{ value: "" }];
+                this.insertStudentsToClassVisible = false;
               });
             })
             .catch(() => {
@@ -301,16 +311,64 @@ export default {
       this.insertStudentsToClassVisible = true;
     },
 
-    stuHandleEdit(index, oneStu) {},
-    stuHandleDelete(index, oneStu) {},
-    stuHandleCurrentChange() {},
-    stuHandleSizeChange() {},
-    selectClassStudents(index, oneClass) {
-      this.selectStudentsVisible = true;
-      this.$get("/teacher/listStudents/" + oneClass.id).then((res) => {
+    // 查询班级学生
+    initClassStudents() {
+      let url = "currentPage=" + this.stuCurrentPage + "&size=" + this.stuSize;
+      this.$get(
+        "/teacher/listStudents/" + this.currentClassId + "?" + url
+      ).then((res) => {
         this.studentData = res.data;
         this.stuTotal = res.total;
       });
+    },
+    stuHandleEdit(index, oneStu) {
+      this.$confirm("此操作将初始化学生账号密码为学号, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$post(
+            "/teacher/updateStuById/" + oneStu.stuId
+          ).then((res) => {});
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消初始化",
+          });
+        });
+    },
+    stuHandleDelete(index, oneStu) {
+      this.$confirm("此操作将删除该学生用户包括其作业, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$delete("/teacher/deleteStudent/" + oneStu.stuId).then((res) => {
+            this.initClassStudents();
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+    },
+    stuHandleCurrentChange(val) {
+      this.stuCurrentPage = val;
+      this.initClassStudents();
+    },
+    stuHandleSizeChange(val) {
+      this.stuSize = val;
+      this.initClassStudents();
+    },
+    selectClassStudents(index, oneClass) {
+      this.currentClassId = oneClass.id;
+      this.initClassStudents();
+      this.selectStudentsVisible = true;
     },
 
     handleEdit(index, oneClass) {

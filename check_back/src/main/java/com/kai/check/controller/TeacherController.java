@@ -89,13 +89,18 @@ public class TeacherController {
         return userService.initStuById(studentId);
     }
 
-    @ApiOperation(value = "修改学生信息")
-    @PutMapping("/updateStudent")
-    public RespBean updateStudent(@RequestBody Student student) {
-        if (studentService.updateById(student)) {
-            return RespBean.success();
-        }
-        return RespBean.error();
+//    @ApiOperation(value = "修改学生信息")
+//    @PutMapping("/updateStudent")
+//    public RespBean updateStudent(@RequestBody Student student) {
+//        if (studentService.updateById(student)) {
+//            return RespBean.success();
+//        }
+//        return RespBean.error();
+//    }
+    @ApiOperation(value = "删除学生")
+    @DeleteMapping("/deleteStudent/{studentId}")
+    public RespBean deleteStudent(@PathVariable String studentId){
+        return teacherService.deleteStudent(studentId);
     }
 
     @ApiOperation(value = "创建班级")
@@ -281,5 +286,25 @@ public class TeacherController {
                                              Integer workId) {
         return stuWorkService.getClassStudentWorks(currentPage, size, classId, workId);
     }
+
+//    // 在学生交作业时查重,老师只查看结果
+//    @ApiOperation(value = "新作业查重")
+//    @PutMapping("/checkCode/{workId}")
+//    public RespBean checkCode(@PathVariable("workId") Integer workId,Principal principal){
+//        if(workId==null){
+//            return RespBean.error(RespBeanEnum.CHECK_ERROR);
+//        }
+//        String name = principal.getName();
+//        return teacherService.checkCode(workId,name);
+//    }
+
+    @ApiOperation(value = "新查看查重结果(分页)")
+    @GetMapping("/checkResult")
+    public RespPageBean listCheckResult(@RequestParam(defaultValue = "1") Integer currentPage,
+                                        @RequestParam(defaultValue = "10") Integer size,
+                                        Integer workId) {
+        return workResultService.listCheckResult(currentPage, size, workId);
+    }
+
 
 }

@@ -11,32 +11,52 @@
         <result column="stu_id" property="stuId"/>
         <result column="work_url" property="workUrl"/>
         <result column="work_ext" property="workExt"/>
+        <result column="pdf_name" property="pdfName"/>
+        <result column="pdf_path" property="pdfPath"/>
         <result column="is_commit" property="isCommit"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+    </resultMap>
+    <resultMap id="selectStuWorksResultMap" type="com.kai.check.pojo.StuWork" extends="BaseResultMap">
+        <result column="class_name" property="className"/>
+        <result column="work_title" property="workTitle"/>
+        <result column="work_describe" property="workDescribe"/>
+        <result column="end_time" property="workEndTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id
-        , work_id, class_id,work_name, stu_id, work_url, work_ext,is_commit, create_time, update_time
+        , work_id, class_id,work_name, stu_id, work_url, work_ext,pdf_name,pdf_path, is_commit, create_time, update_time
     </sql>
     <delete id="deleteByStuId">
-        DELETE FROM
-            t_stu_work
-        WHERE
-            stu_id=#{stuId}
+        DELETE
+        FROM t_stu_work
+        WHERE stu_id = #{stuId}
     </delete>
     <select id="getClassStudentWorks" resultType="com.kai.check.pojo.StuWork">
-        SELECT
-            id,work_name,stu_id,is_commit,update_time
-        FROM
-            t_stu_work
-        WHERE
-            class_id=#{classId}
-          AND
-            work_id=#{workId}
+        SELECT *
+        FROM t_stu_work
+        WHERE class_id = #{classId}
+          AND work_id = #{workId}
         ORDER BY stu_id
+    </select>
+    <select id="selectStuWorks" resultMap="selectStuWorksResultMap">
+        SELECT sw.*,
+               ct.`class_name`    AS class_name,
+               tw.`work_title`    AS work_title,
+               tw.`work_describe` AS work_describe,
+               cw.`end_time`      AS end_time
+        FROM t_stu_work sw,
+             t_tea_work tw,
+             t_class_tea ct,
+             t_class_work cw
+        WHERE sw.`stu_id` = #{stuId}
+          AND sw.`class_id` = ct.`id`
+          AND sw.`work_id` = tw.`work_id`
+          AND sw.`work_id` = cw.`work_id`
+          AND sw.`class_id` = cw.`class_id`
+        ORDER BY sw.`class_id`, sw.`work_id` DESC
     </select>
 
 </mapper>

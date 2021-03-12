@@ -11,10 +11,12 @@ import { postRequest } from "./utils/api";
 import { getRequest } from "./utils/api";
 import { putRequest } from "./utils/api";
 import { deleteRequest } from "./utils/api";
+import { downloadRequest } from './utils/download'
 Vue.prototype.$post = postRequest;
 Vue.prototype.$put = putRequest;
 Vue.prototype.$get = getRequest;
 Vue.prototype.$delete = deleteRequest;
+Vue.prototype.$download = downloadRequest;
 
 Vue.config.productionTip = false
 

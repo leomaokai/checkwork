@@ -31,14 +31,16 @@ public enum RespBeanEnum {
     INSERT_ERROR(500215,"添加失败"),
     INSERT_SUCCESS(200203,"添加成功"),
     COMMIT_SUCCESS(200204,"提交成功"),
-    COMMIT_ERROR(500216,"提交失败"),
+    COMMIT_ERROR(500216,"提交失败,文件扩展名错误或重复率较高"),
     COMMIT_NOT(500217,"打开失败"),
     INIT_ERROR(500218,"初始化失败"),
     INIT_SUCCESS(200206,"初始化成功"),
     DELETE_SUCCESS(200207,"删除成功"),
     DELETE_ERROR(500219,"删除失败"),
     UPDATE_SUCCESS(200208,"修改成功"),
-    UPDATE_ERROR(500220,"修改失败")
+    UPDATE_ERROR(500220,"修改失败"),
+    CHECK_ERROR(500221,"查重失败"),
+    CHECK_SUCCESS(200209,"查重成功")
     // 提交模块
 
     ;

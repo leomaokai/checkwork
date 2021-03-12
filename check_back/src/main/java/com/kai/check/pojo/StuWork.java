@@ -1,6 +1,7 @@
 package com.kai.check.pojo;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -50,14 +51,22 @@ public class StuWork implements Serializable {
     @ApiModelProperty(value = "作业ext")
     private String workExt;
 
+    @ApiModelProperty(value = "PDF作业名")
+    private String pdfName;
+
+    @ApiModelProperty(value = "PDFpath")
+    private String pdfPath;
+
     @ApiModelProperty(value = "未提交,已提交,超时提交")
     private String isCommit;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     @TableField(fill=FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
@@ -68,5 +77,21 @@ public class StuWork implements Serializable {
 //    @TableField(exist = false)
 //    private Student student;
 
+    @ApiModelProperty(value = "作业标题")
+    @TableField(exist = false)
+    private String workTitle;
+
+    @ApiModelProperty(value = "作业描述")
+    @TableField(exist = false)
+    private String workDescribe;
+
+    @ApiModelProperty(value = "作业班级名称")
+    @TableField(exist = false)
+    private String className;
+
+    @ApiModelProperty(value = "作业截止时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    @TableField(exist = false)
+    LocalDateTime workEndTime;
 
 }

@@ -11,15 +11,8 @@
         <result column="work_result" property="workResult"/>
     </resultMap>
     <resultMap id="listCheckResultResultMap" type="com.kai.check.pojo.WorkResult" extends="BaseResultMap">
-        <association property="workClass" javaType="com.kai.check.pojo.WorkClass">
-            <result column="work_describe" property="workDescribe"/>
-        </association>
-        <association property="stuWorkFirst" javaType="com.kai.check.pojo.StuWork">
-            <result column="work_name_first" property="workName"/>
-        </association>
-        <association property="stuWorkSecond" javaType="com.kai.check.pojo.StuWork">
-            <result column="work_name_second" property="workName"/>
-        </association>
+        <result column="work_name_first" property="stuWorkFirstName"/>
+        <result column="work_name_second" property="stuWorkSecondName"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -28,33 +21,28 @@
         ,work_id,work_first_id, work_second_id, work_result
     </sql>
     <delete id="deleteByWorkId">
-        delete from
-        t_work_result
-        where
-        work_id=#{workId}
+        delete
+        from t_work_result
+        where work_id = #{workId}
+    </delete>
+    <delete id="deleteStuWorkId">
+        delete
+        from t_work_result
+        where work_first_id = #{stuWorkId}
+           or work_second_id = #{stuWorkId}
     </delete>
     <select id="listCheckResult" resultMap="listCheckResultResultMap">
-        SELECT
-            DISTINCT
-            wc.`work_describe`,
-            sw1.`work_name` AS work_name_first,
-            sw2.`work_name` AS work_name_second,
-            wr.`work_result`
-        FROM
-            t_work_result wr,
-            t_work_class wc,
-            t_stu_work sw1,
-            t_stu_work sw2
-        WHERE
-            wr.`work_id`=#{id}
-          AND
-            wc.`id`=wr.`work_id`
-          AND
-            wr.`work_first_id`=sw1.`id`
-          AND
-            wr.`work_second_id`=sw2.`id`
+        SELECT DISTINCT sw1.`work_name` AS work_name_first,
+                        sw2.`work_name` AS work_name_second,
+                        wr.`work_result`
+        FROM t_work_result wr,
+             t_stu_work sw1,
+             t_stu_work sw2
+        WHERE wr.`work_id` = #{id}
+          AND wr.`work_first_id` = sw1.`id`
+          AND wr.`work_second_id` = sw2.`id`
+          AND wr.`work_result`!='-1'
         ORDER BY wr.`work_result` DESC
-
     </select>
 
 </mapper>
