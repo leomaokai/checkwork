@@ -82,7 +82,7 @@
           >{{ commitStuworkBtnText }}</el-button
         >
         <div slot="tip" class="el-upload__tip">
-          仅能上传 c/cpp/java/python 源代码 或 pdf 文件，且不超过2MB
+          仅能上传 c/cpp/java/py 源代码 或 pdf 文件，且不超过5MB
         </div>
       </el-upload>
     </el-dialog>
@@ -150,10 +150,22 @@ export default {
         if (this.isCommitting) {
           res.data.forEach((one) => {
             if (one.id == this.commitStuWorkData.stuWorkId) {
-              if (one.workName == "未提交") {
+              if (one.isChecked == 1) {
                 this.$message({
                   type: "error",
-                  message: "提交失败，源码中含有中文符号或重复率较高",
+                  message:
+                    "提交失败，与已提交的作业重复率过高，请修改作业后重新提交！！！",
+                });
+              } else if (one.workName == "未提交") {
+                this.$message({
+                  type: "error",
+                  message:
+                    "提交失败，源码文件类型错误或源码中含有中文符号，请检查输入输出语句是否含有中文！！！",
+                });
+              } else if (one.pdfName == "未提交") {
+                this.$message({
+                  type: "error",
+                  message: "提交失败，文件类型错误！！！",
                 });
               } else {
                 this.$message({ type: "success", message: "提交成功" });

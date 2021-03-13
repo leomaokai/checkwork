@@ -25,7 +25,7 @@ public enum RespBeanEnum {
     LOGIN_SUCCESS(200200,"登录成功"),
     LOGOUT_SUCCESS(200201,"退出成功"),
     UPDATE_PWD_SUCCESS(200202,"更新密码成功"),
-
+    // 提交模块
     DISPOSE_SUCCESS(200205,"布置成功"),
     DISPOSE_ERROR(500219,"布置失败"),
     INSERT_ERROR(500215,"添加失败"),
@@ -40,8 +40,10 @@ public enum RespBeanEnum {
     UPDATE_SUCCESS(200208,"修改成功"),
     UPDATE_ERROR(500220,"修改失败"),
     CHECK_ERROR(500221,"查重失败"),
-    CHECK_SUCCESS(200209,"查重成功")
-    // 提交模块
+    CHECK_SUCCESS(200209,"查重成功"),
+    DOWN_ERROR(500222,"下载失败"),
+    DOWN_SUCCESS(200210,"下载成功")
+
 
     ;
     private final Integer code;

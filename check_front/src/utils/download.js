@@ -1,5 +1,5 @@
 import axios from 'axios'
-
+import { Message } from 'element-ui'
 const service = axios.create({
     responseType: 'arraybuffer'
 })
@@ -23,8 +23,12 @@ service.interceptors.response.use(resp => {
         let fileDownload = require('js-file-download');
         let fileName = headers['content-disposition'].split(';')[1].split('filename=')[1];
         let contentType = headers['content-type'];
-        fileName.decodeURIComponent(fileName);
-        fileDownload(resp.data, fileName, contentType);
+        fileName = decodeURIComponent(fileName);
+        if (fileName == "") {
+            Message({ type: "info", message: "作业还未提交,下载失败" });
+        } else {
+            fileDownload(resp.data, fileName, contentType);
+        }
     }
 
 }, error => {

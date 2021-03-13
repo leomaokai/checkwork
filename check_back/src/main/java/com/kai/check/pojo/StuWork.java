@@ -57,8 +57,11 @@ public class StuWork implements Serializable {
     @ApiModelProperty(value = "PDFpath")
     private String pdfPath;
 
-    @ApiModelProperty(value = "未提交,已提交,超时提交")
+    @ApiModelProperty(value = "未提交,按时提交,超时提交")
     private String isCommit;
+
+    @ApiModelProperty(value = "默认0,1查重过高被撤回")
+    private Integer isChecked;
 
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")

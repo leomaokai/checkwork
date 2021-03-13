@@ -216,18 +216,45 @@
           <el-table-column
             property="stuId"
             label="学号"
-            width="150"
+            width="120"
           ></el-table-column>
           <el-table-column
             property="workName"
             label="源代码"
             width="150"
           ></el-table-column>
+          <el-table-column label="操作" width="90">
+            <template slot-scope="scope">
+              <el-button @click="downCode(scope.row)" type="text" size="small"
+                >下载</el-button
+              >
+              <!-- <el-button
+                @click="inlineCode(scope.row)"
+                type="text"
+                size="small"
+                disabled
+                >查看</el-button
+              > -->
+            </template>
+          </el-table-column>
           <el-table-column
             property="pdfName"
             label="PDF"
             width="150"
           ></el-table-column>
+          <el-table-column label="操作" width="90">
+            <template slot-scope="scope">
+              <el-button @click="downPdf(scope.row)" type="text" size="small"
+                >下载</el-button
+              >
+              <!-- <el-button
+                @click="inlinePdf(scope.row)"
+                type="text"
+                size="small"
+                disabled
+                >查看</el-button -->
+            </template>
+          </el-table-column>
           <el-table-column
             property="isCommit"
             label="提交情况"
@@ -462,6 +489,20 @@ export default {
       this.initClassStudentWorks();
     },
     // 查询班级作业模块
+    inlineCode(row) {},
+    downCode(row) {
+      let flag = 1;
+      this.downStuWork(row.id, flag);
+    },
+    inlinePdf(row) {},
+    downPdf(row) {
+      let flag = 2;
+      this.downStuWork(row.id, flag);
+    },
+    downStuWork(stuWorkId, flag) {
+      let url = "stuWorkId=" + stuWorkId + "&flag=" + flag;
+      this.$download("/teacher/download?" + url).then((res) => {});
+    },
     handleSizeChange(val) {
       this.size = val;
       this.initClassWorks();

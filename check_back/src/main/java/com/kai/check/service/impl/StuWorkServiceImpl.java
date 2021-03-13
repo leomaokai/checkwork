@@ -275,7 +275,7 @@ public class StuWorkServiceImpl extends ServiceImpl<StuWorkMapper, StuWork> impl
                             if (!(work.getIsCommit().equals("未提交")) && work.getWorkExt().equals(ext)) {
                                 // 交作业时查重并得到结果 重复率高直接返回失败 否则插入数据库
                                 // 查重并得到结果
-                                Integer currentStuWorkId=stuWork.getId();
+                                Integer currentStuWorkId = stuWork.getId();
                                 WorkResult workResult = new WorkResult();
                                 workResult.setWorkFirstId(currentStuWorkId).setWorkSecondId(work.getId()).setWorkId(workId);
                                 String resourcePath = workDir + "/code";
@@ -286,6 +286,10 @@ public class StuWorkServiceImpl extends ServiceImpl<StuWorkMapper, StuWork> impl
                                     File file = new File(resourcePath, newFilename.toString());
                                     if (file.exists()) {
                                         file.delete();
+                                    }
+                                    if (check >= resultMax) {
+                                        stuWork.setIsChecked(1);
+                                        stuWorkMapper.updateById(stuWork);
                                     }
                                     workResultMapper.deleteStuWorkId(currentStuWorkId);
                                     return RespBean.error(RespBeanEnum.COMMIT_ERROR);
@@ -302,7 +306,7 @@ public class StuWorkServiceImpl extends ServiceImpl<StuWorkMapper, StuWork> impl
             if (flag) {
                 stuWork.setPdfName(newFilename.toString()).setPdfPath(workPath).setIsCommit("按时提交");
             } else {
-                stuWork.setWorkName(newFilename.toString()).setWorkUrl(workPath).setWorkExt(ext).setIsCommit("未提交PDF");
+                stuWork.setWorkName(newFilename.toString()).setWorkUrl(workPath).setWorkExt(ext).setIsCommit("未提交PDF").setIsChecked(0);
             }
             if (LocalDateTime.now().isAfter(endTime)) {
                 stuWork.setIsCommit("超时提交");
@@ -332,6 +336,42 @@ public class StuWorkServiceImpl extends ServiceImpl<StuWorkMapper, StuWork> impl
         }
 
         return RespBean.error(RespBeanEnum.DELETE_ERROR);
+    }
+
+    @Override
+    public void downloadWork(Integer stuWorkId, Integer flag, HttpServletResponse response) {
+        String url = "";
+        String fileName = "";
+        response.setHeader("content-type", "application/octet-stream");
+        StuWork stuWork = stuWorkMapper.selectById(stuWorkId);
+        if (flag == 1) {
+            url = stuWork.getWorkUrl();
+            fileName = stuWork.getWorkName();
+        } else if (flag == 2) {
+            url = stuWork.getPdfPath();
+            fileName = stuWork.getPdfName();
+        }
+        if (url == null || url.equals("")) {
+//            // return RespBean.error(RespBeanEnum.DOWN_ERROR);
+            try {
+                response.setHeader("content-disposition", "attachment" + ";filename=" + URLEncoder.encode("", "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+
+        try (
+                ServletOutputStream outputStream = response.getOutputStream();
+                FileInputStream inputStream = new FileInputStream(url);
+        ) {
+            response.setHeader("content-disposition", "attachment" + ";filename=" + URLEncoder.encode(fileName, "UTF-8"));
+            IOUtils.copy(inputStream, outputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //return RespBean.success(RespBeanEnum.DOWN_SUCCESS);
     }
 
     private boolean commitWorkToFile(MultipartFile workFile, String workPath) {

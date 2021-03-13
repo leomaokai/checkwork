@@ -10,6 +10,7 @@ import com.kai.check.utils.RespBeanEnum;
 import com.kai.check.utils.RespPageBean;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.models.auth.In;
+import lombok.Synchronized;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -76,11 +77,11 @@ public class StudentController {
         return stuWorkService.deleteWork(stuWorkId);
     }
 
-    @ApiOperation(value = "下载作业(下载或在线查看)")
-    @GetMapping("/downWork/{stuWorkId}/{openStyle}")
-    public RespBean downWork(@PathVariable("stuWorkId") Integer stuWorkId, @PathVariable("openStyle") Integer isDown, HttpServletResponse response) {
-        return stuWorkService.downWork(stuWorkId, isDown, response);
-    }
+//    @ApiOperation(value = "下载作业(下载或在线查看)")
+//    @GetMapping("/downWork/{stuWorkId}/{openStyle}")
+//    public RespBean downWork(@PathVariable("stuWorkId") Integer stuWorkId, @PathVariable("openStyle") Integer isDown, HttpServletResponse response) {
+//        return stuWorkService.downWork(stuWorkId, isDown, response);
+//    }
 
     @ApiOperation(value = "新查作业(分页)")
     @GetMapping("/selectStuWorks")

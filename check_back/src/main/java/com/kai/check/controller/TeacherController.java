@@ -89,7 +89,7 @@ public class TeacherController {
         return userService.initStuById(studentId);
     }
 
-//    @ApiOperation(value = "修改学生信息")
+    //    @ApiOperation(value = "修改学生信息")
 //    @PutMapping("/updateStudent")
 //    public RespBean updateStudent(@RequestBody Student student) {
 //        if (studentService.updateById(student)) {
@@ -99,7 +99,7 @@ public class TeacherController {
 //    }
     @ApiOperation(value = "删除学生")
     @DeleteMapping("/deleteStudent/{studentId}")
-    public RespBean deleteStudent(@PathVariable String studentId){
+    public RespBean deleteStudent(@PathVariable String studentId) {
         return teacherService.deleteStudent(studentId);
     }
 
@@ -304,6 +304,17 @@ public class TeacherController {
                                         @RequestParam(defaultValue = "10") Integer size,
                                         Integer workId) {
         return workResultService.listCheckResult(currentPage, size, workId);
+    }
+
+    // 1 下载源代码, 2 下载pdf,
+    @ApiOperation(value = "下载作业")
+    @GetMapping(value = "/download", produces = "application/octet-stream")
+    public void downloadWork(Integer stuWorkId, Integer flag, HttpServletResponse response) {
+        if (stuWorkId == null || flag == null) {
+           // return RespBean.error(RespBeanEnum.DOWN_ERROR);
+            return;
+        }
+        stuWorkService.downloadWork(stuWorkId, flag, response);
     }
 
 

@@ -37,4 +37,6 @@ public interface IStuWorkService extends IService<StuWork> {
 
     RespBean deleteStudentWork(Integer stuWorkId);
 
+    void downloadWork(Integer stuWorkId, Integer flag, HttpServletResponse response);
+
 }
