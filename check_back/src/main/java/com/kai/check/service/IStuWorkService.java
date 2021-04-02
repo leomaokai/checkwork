@@ -19,19 +19,11 @@ import java.util.List;
  */
 public interface IStuWorkService extends IService<StuWork> {
 
-    List<StuWork> listWorks(String name);
-
     RespBean deleteWork(Integer stuWorkId);
-
-    RespBean downWork(Integer stuWorkId, Integer isDown, HttpServletResponse response);
 
     RespPageBean getClassStudentWorks(Integer currentPage, Integer size, Integer classId, Integer workId);
 
     RespPageBean selectStuWorks(Integer currentPage, Integer size, String name);
-
-//    RespBean uploadStuWork(Integer stuWorkId, MultipartFile workFile, String name);
-//
-//    RespBean uploadStuWorkPDF(Integer stuWorkId, MultipartFile workFile, String name);
 
     RespBean commitWork(Integer stuWorkId, MultipartFile workFile, String name,boolean flag);
 

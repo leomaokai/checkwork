@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kai.check.mapper.ClassTeaMapper;
 import com.kai.check.pojo.ClassTea;
-import com.kai.check.pojo.WorkClass;
 import com.kai.check.service.IClassTeaService;
 import com.kai.check.utils.RespPageBean;
 import org.springframework.stereotype.Service;

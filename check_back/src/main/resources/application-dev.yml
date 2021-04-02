@@ -82,3 +82,11 @@ kai:
   sim: 1
   # 查重结果最大值,超过返回
   resultMax: 80
+#  # 课程设计提交目录
+#  resourceDes: /check_resource_design
+#  # 课程设计查重结果目录
+#  resultDes: /check_result
+  # 课程设计PDF目录
+  design: /check_design
+  designResource: /check_design_resource
+  designResult: /chack_design_result

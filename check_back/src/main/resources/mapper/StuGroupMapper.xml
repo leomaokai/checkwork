@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kai.check.mapper.StuGroupMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.kai.check.pojo.StuGroup">
+        <id column="id" property="id"/>
+        <result column="design_id" property="designId"/>
+        <result column="class_id" property="classId"/>
+        <result column="stu_id1" property="stuId1"/>
+        <result column="stu_id2" property="stuId2"/>
+        <result column="stu_id3" property="stuId3"/>
+        <result column="stu_id4" property="stuId4"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+    <resultMap id="listStudentsGroupsResultMap" type="com.kai.check.pojo.StuGroup" extends="BaseResultMap">
+        <result column="design_title" property="designTitle"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id
+        , design_id, class_id, stu_id1, stu_id2, stu_id3, stu_id4, create_time, update_time
+    </sql>
+    <select id="selectGroupByOneStudentId" resultType="com.kai.check.pojo.StuGroup">
+        SELECT id,
+               design_id,
+               stu_id1,
+               stu_id2,
+               stu_id3,
+               stu_id4
+        FROM t_stu_group
+        WHERE stu_id1 = #{stuId}
+           OR stu_id2 = #{stuId}
+           OR stu_id3 = #{stuId}
+           OR stu_id4 = #{stuId}
+    </select>
+    <select id="listStudentsGroups" resultMap="listStudentsGroupsResultMap">
+        SELECT
+            td.`design_title`,
+            sg.`stu_id1`,
+            sg.`stu_id2`,
+            sg.`stu_id3`,
+            sg.`stu_id4`
+        FROM
+            t_stu_group sg,
+            t_tea_design td
+        WHERE
+            sg.`class_id`=#{classId}
+          AND
+            sg.`design_id`=td.`id`
+    </select>
+
+</mapper>

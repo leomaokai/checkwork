@@ -10,6 +10,7 @@
         <result column="stu_qq" property="stuQq"/>
         <result column="stu_mail" property="stuMail"/>
         <result column="stu_class_id" property="stuClassId"/>
+        <result column="is_group" property="isGroup"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
@@ -24,21 +25,39 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         stu_id
-        , stu_name, stu_phone, stu_qq, stu_mail, stu_class_id, create_time, update_time
+        , stu_name, stu_phone, stu_qq, stu_mail, stu_class_id, is_group,create_time, update_time
     </sql>
+    <update id="setIsGroup">
+        UPDATE
+            t_student
+        SET is_group=1
+        WHERE stu_id = #{id}
+    </update>
     <select id="listStudents" resultType="com.kai.check.pojo.Student">
-        SELECT
-        DISTINCT
-        stu.`stu_id`,
-        stu.`stu_name`,
-        stu.`stu_phone`,
-        stu.`stu_qq`,
-        stu.`stu_mail`
-        FROM
-        t_student stu
-        WHERE
-        stu.`stu_class_id`=#{classId}
+        SELECT DISTINCT stu.`stu_id`,
+                        stu.`stu_name`,
+                        stu.`stu_phone`,
+                        stu.`stu_qq`,
+                        stu.`stu_mail`
+        FROM t_student stu
+        WHERE stu.`stu_class_id` = #{classId}
         ORDER BY stu.`stu_id`
+    </select>
+    <select id="listClassStudents" resultType="java.lang.String">
+        SELECT s2.`stu_id`
+        FROM t_student s1,
+             t_student s2
+        WHERE s1.`stu_id` = #{stuId}
+          AND s2.`stu_id`!=s1.`stu_id`
+        AND
+        s2.`stu_class_id`=s1.`stu_class_id`
+        AND
+        s2.`is_group`=0
+    </select>
+    <select id="getClassIdByStuId" resultType="java.lang.Integer">
+        SELECT stu_class_id
+        FROM t_student
+        WHERE stu_id = #{id}
     </select>
 
 </mapper>

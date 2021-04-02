@@ -4,11 +4,9 @@ import jplag.ExitException;
 import jplag.Program;
 import jplag.options.CommandLineOptions;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,4 +103,27 @@ public class CheckCode {
         }
         return result;
     }
+
+//    public static boolean commitWorkToFile(MultipartFile workFile, String workPath) {
+//        File file = new File(workPath);
+//        if (file.exists()) {
+//            file.delete();
+//        }
+//        try (
+//                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file, true));
+//                BufferedInputStream bufferedInputStream = new BufferedInputStream(workFile.getInputStream());
+//        ) {
+//            byte[] bytes = new byte[1024];
+//            int len = 0;
+//            while ((len = bufferedInputStream.read(bytes)) != -1) {
+//                bufferedOutputStream.write(bytes, 0, len);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        if (file.exists()) {
+//            return true;
+//        }
+//        return false;
+//    }
 }

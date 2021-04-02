@@ -9,9 +9,6 @@ import com.kai.check.service.IUserService;
 import com.kai.check.utils.CheckCode;
 import com.kai.check.utils.RespBean;
 import com.kai.check.utils.RespBeanEnum;
-import jplag.ExitException;
-import jplag.Program;
-import jplag.options.CommandLineOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.io.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,8 +38,6 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     @Resource
     private StudentMapper studentMapper;
     @Resource
-    private WorkClassMapper workClassMapper;
-    @Resource
     private StuWorkMapper stuWorkMapper;
     @Resource
     private TeacherMapper teacherMapper;
@@ -53,6 +47,8 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     private TeaWorkMapper teaWorkMapper;
     @Resource
     private ClassWorkMapper classWorkMapper;
+    @Resource
+    private ClassDesignMapper classDesignMapper;
     @Value("${kai.resource}")
     private String resource;
     @Value("${kai.result}")
@@ -356,6 +352,22 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
             return RespBean.success(RespBeanEnum.DELETE_SUCCESS);
         }
         return RespBean.error(RespBeanEnum.DELETE_ERROR);
+    }
+
+    @Override
+    @Transactional
+    public RespBean disposeDesignToClasses(Integer[] designIds, LocalDateTime end, Integer[] classIds, String teaId) {
+        for (Integer classId : classIds) {
+            for (Integer designId : designIds) {
+                ClassDesign classDesign = new ClassDesign();
+                classDesign.setClassId(classId);
+                classDesign.setDesignId(designId);
+                classDesign.setTeaId(teaId);
+                classDesign.setEndTime(end);
+                classDesignMapper.insert(classDesign);
+            }
+        }
+        return RespBean.success(RespBeanEnum.DISPOSE_SUCCESS);
     }
 
     // 在学生交作业时查重,老师只查看结果

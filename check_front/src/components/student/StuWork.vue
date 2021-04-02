@@ -104,6 +104,7 @@ export default {
         stuWorkId: "",
       },
       isCommitting: false,
+      isCommittingPdf: false,
       headers: {
         Authorization: window.sessionStorage.getItem("tokenStr"),
       },
@@ -140,6 +141,8 @@ export default {
       this.commitStuWorkData.stuWorkId = "";
       this.commitStuWorkDisabled = false;
       this.commitStuWorkVisible = false;
+      this.isCommitting = false;
+      this.isCommittingPdf = false;
     },
     // 作业查询模块
     initStuWork() {
@@ -162,7 +165,7 @@ export default {
                   message:
                     "提交失败，源码文件类型错误或源码中含有中文符号，请检查输入输出语句是否含有中文！！！",
                 });
-              } else if (one.pdfName == "未提交") {
+              } else if (this.isCommittingPdf && one.pdfName == "未提交") {
                 this.$message({
                   type: "error",
                   message: "提交失败，文件类型错误！！！",
@@ -172,9 +175,10 @@ export default {
               }
             }
           });
+          this.isCommitting = false;
+          this.isCommittingPdf = false;
+          this.commitStuWorkData.stuWorkId = "";
         }
-        this.isCommitting = false;
-        this.commitStuWorkData.stuWorkId = "";
       });
     },
     handleSizeChange(val) {
@@ -228,6 +232,7 @@ export default {
               this.commitStuWorkUrl = "/student/uploadStuWorkPDF";
               this.commitStuWorkVisible = true;
               this.commitStuWorkData.stuWorkId = row.id;
+              this.isCommittingPdf = true;
             })
             .catch(() => {
               this.$message({

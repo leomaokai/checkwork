@@ -63,6 +63,12 @@ public class StuWork implements Serializable {
     @ApiModelProperty(value = "默认0,1查重过高被撤回")
     private Integer isChecked;
 
+    @ApiModelProperty(value = "得分")
+    private Integer teaScore;
+
+    @ApiModelProperty(value = "点评")
+    private String teaOpinion;
+
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     @TableField(fill = FieldFill.INSERT)

@@ -9,14 +9,13 @@
         <result column="work_title" property="workTitle" />
         <result column="work_describe" property="workDescribe" />
         <result column="work_dir" property="workDir" />
-
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        work_id, tea_id, work_title, work_describe, work_dir, end_time, create_time, update_time
+        work_id, tea_id,work_title, work_describe, work_dir, create_time, update_time
     </sql>
 
 </mapper>

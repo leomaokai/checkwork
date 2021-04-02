@@ -1,10 +1,8 @@
 package com.kai.check.controller;
 
 
-import com.kai.check.pojo.StuWork;
-import com.kai.check.pojo.Student;
-import com.kai.check.service.IStuWorkService;
-import com.kai.check.service.IStudentService;
+import com.kai.check.pojo.*;
+import com.kai.check.service.*;
 import com.kai.check.utils.RespBean;
 import com.kai.check.utils.RespBeanEnum;
 import com.kai.check.utils.RespPageBean;
@@ -18,6 +16,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.List;
+
 /**
  * <p>
  * 前端控制器
@@ -34,6 +33,12 @@ public class StudentController {
     private IStudentService studentService;
     @Resource
     private IStuWorkService stuWorkService;
+    @Resource
+    private IStuGroupService stuGroupService;
+    @Resource
+    private IStuDesignService stuDesignService;
+    @Resource
+    private ITeaDesignService teaDesignService;
 
     @ApiOperation(value = "获得当前用户(学生)信息")
     @GetMapping("/info")
@@ -54,34 +59,11 @@ public class StudentController {
         return RespBean.error(RespBeanEnum.UPDATE_ERROR);
     }
 
-    @ApiOperation(value = "查作业")
-    @GetMapping("/listWorks")
-    public List<StuWork> listWorks(Principal principal) {
-        if (null == principal) {
-            return null;
-        }
-        String name = principal.getName();
-        return stuWorkService.listWorks(name);
-    }
-
-    @ApiOperation(value = "提交作业")
-    @PostMapping("/commitWork/{workId}")
-    public RespBean commitWork(@PathVariable("workId") Integer workId, MultipartFile workFile, Principal principal) {
-        String name = principal.getName();
-        return studentService.commitWork(workId, workFile, name);
-    }
-
     @ApiOperation(value = "删除作业")
     @DeleteMapping("/deleteWork/{id}")
     public RespBean deleteWork(@PathVariable("id") Integer stuWorkId) {
         return stuWorkService.deleteWork(stuWorkId);
     }
-
-//    @ApiOperation(value = "下载作业(下载或在线查看)")
-//    @GetMapping("/downWork/{stuWorkId}/{openStyle}")
-//    public RespBean downWork(@PathVariable("stuWorkId") Integer stuWorkId, @PathVariable("openStyle") Integer isDown, HttpServletResponse response) {
-//        return stuWorkService.downWork(stuWorkId, isDown, response);
-//    }
 
     @ApiOperation(value = "新查作业(分页)")
     @GetMapping("/selectStuWorks")
@@ -94,31 +76,84 @@ public class StudentController {
 
     @ApiOperation(value = "新提交作业源代码")
     @PostMapping("/uploadStuWork")
-    public RespBean uploadStuWork(@RequestParam("workFile") MultipartFile workFile,@RequestParam("stuWorkId") Integer stuWorkId,Principal principal) {
+    public RespBean uploadStuWork(@RequestParam("workFile") MultipartFile workFile, @RequestParam("stuWorkId") Integer stuWorkId, Principal principal) {
         if (stuWorkId == null || workFile == null || principal == null) {
             return RespBean.error(RespBeanEnum.COMMIT_ERROR);
         }
         String name = principal.getName();
 
-        return stuWorkService.commitWork(stuWorkId, workFile, name,false);
+        return stuWorkService.commitWork(stuWorkId, workFile, name, false);
     }
 
     @ApiOperation(value = "新提交作业PDF")
     @PostMapping("/uploadStuWorkPDF")
-    public RespBean uploadStuWorkPDF(@RequestParam("workFile") MultipartFile workFile,@RequestParam("stuWorkId") Integer stuWorkId,Principal principal){
+    public RespBean uploadStuWorkPDF(@RequestParam("workFile") MultipartFile workFile, @RequestParam("stuWorkId") Integer stuWorkId, Principal principal) {
         if (stuWorkId == null || workFile == null || principal == null) {
             return RespBean.error(RespBeanEnum.COMMIT_ERROR);
         }
         String name = principal.getName();
-        return stuWorkService.commitWork(stuWorkId,workFile,name,true);
+        return stuWorkService.commitWork(stuWorkId, workFile, name, true);
     }
 
     @ApiOperation(value = "新删除作业")
     @DeleteMapping("/deleteStudentWork/{stuWorkId}")
-    public RespBean deleteStudentWork(@PathVariable("stuWorkId") Integer stuWorkId){
-        if(stuWorkId==null){
+    public RespBean deleteStudentWork(@PathVariable("stuWorkId") Integer stuWorkId) {
+        if (stuWorkId == null) {
             return RespBean.error(RespBeanEnum.DELETE_ERROR);
         }
         return stuWorkService.deleteStudentWork(stuWorkId);
+    }
+
+    @ApiOperation(value = "选择组员和课程设计")
+    @PostMapping("/createGroup")
+    public RespBean createGroup(@RequestParam("studentIds") String[] studentIds, @RequestParam("designId") Integer designId, Principal principal) {
+        String name = principal.getName();
+        return stuGroupService.createGroup(studentIds, name, designId);
+    }
+
+    @ApiOperation(value = "得到小组和设计信息")
+    @GetMapping("/getGroupDesignInfo")
+    public StuDesign getGroupDesignInfo(Principal principal) {
+        if (principal == null) {
+            return null;
+        }
+        String name = principal.getName();
+        return stuDesignService.getGroupDesignInfo(name);
+    }
+
+    @ApiOperation(value = "查询班级同学")
+    @GetMapping("/listClassStudents")
+    public List<String> listClassStudents(Principal principal) {
+        if (principal == null) {
+            return null;
+        }
+        String name = principal.getName();
+        return studentService.listClassStudents(name);
+    }
+
+    @ApiOperation(value = "查询课程设计")
+    @GetMapping("/listClassDesigns")
+    public List<ClassDesign> listClassDesigns(Principal principal) {
+        if (principal == null) {
+            return null;
+        }
+        String name = principal.getName();
+        return studentService.listClassDesigns(name);
+    }
+
+    @ApiOperation(value = "下载设计的pdf")
+    @GetMapping(value = "/downDesignPdf/{designId}",produces = "application/octet-stream")
+    public void downDesignPdf(@PathVariable("designId") Integer designId, HttpServletResponse response){
+        if(designId==null){
+            return;
+        }
+        teaDesignService.downDesignPdf(designId,response);
+    }
+
+    @ApiOperation(value = "查询小组成员")
+    @GetMapping("/selectGroupMembers")
+    public StuGroup selectGroupMembers(Principal principal){
+        String name = principal.getName();
+        return stuGroupService.selectGroupMembers(name);
     }
 }

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kai.check.mapper.TeaDesignMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.kai.check.pojo.TeaDesign">
+        <id column="id" property="id"/>
+        <result column="design_title" property="designTitle"/>
+        <result column="design_url" property="designUrl"/>
+        <result column="design_dir" property="designDir"/>
+        <result column="tea_id" property="teaId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id
+        , design_title, design_url, design_dir, tea_id, create_time, update_time
+    </sql>
+    <select id="listDesignIds" resultType="com.kai.check.pojo.TeaDesign">
+        SELECT id,design_title
+        FROM t_tea_design
+        WHERE tea_id = #{teaId}
+    </select>
+    <select id="selectByDesignTitle" resultType="java.lang.String">
+        SELECT tea_id
+        FROM t_tea_design
+        WHERE design_title = #{designTitle}
+    </select>
+
+
+</mapper>

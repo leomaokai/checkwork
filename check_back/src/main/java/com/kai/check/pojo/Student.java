@@ -46,6 +46,9 @@ public class Student implements Serializable {
     @ApiModelProperty(value = "学生邮箱")
     private String stuMail;
 
+    @ApiModelProperty(value = "分组")
+    private Integer isGroup;
+
     @ApiModelProperty(value = "班级")
     private Integer stuClassId;
 

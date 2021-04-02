@@ -42,7 +42,9 @@ public enum RespBeanEnum {
     CHECK_ERROR(500221,"查重失败"),
     CHECK_SUCCESS(200209,"查重成功"),
     DOWN_ERROR(500222,"下载失败"),
-    DOWN_SUCCESS(200210,"下载成功")
+    DOWN_SUCCESS(200210,"下载成功"),
+    GROUP_ERROR(500223,"分组失败"),
+    GROUP_SUCCESS(200211,"分组成功")
 
 
     ;

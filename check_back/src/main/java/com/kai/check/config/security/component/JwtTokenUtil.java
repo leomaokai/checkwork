@@ -25,20 +25,27 @@ public class JwtTokenUtil {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    //根据用户信息生成token
+    //根据用户信息生成负载
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+        // 用户名负载
         claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
+        // 当前时间负载
         claims.put(CLAIM_KEY_CREATED, new Date());
+        // 根据负载生成token
         return generateToken(claims);
     }
 
     //根据负载生成 jwt token
     private String generateToken(Map<String, Object> claims) {
         return Jwts.builder()
+                // 设置负载
                 .setClaims(claims)
+                // 设置失效时间
                 .setExpiration(generateExpirationDate())
+                // 设置编码方式(加密算法,密钥)
                 .signWith(SignatureAlgorithm.HS512, secret)
+                // 生成token
                 .compact();
     }
 
@@ -49,7 +56,8 @@ public class JwtTokenUtil {
             Claims claims = getClaimFromToken(token);
             username = claims.getSubject();
         } catch (Exception e) {
-            username = null;
+            //username = null;
+            return null;
         }
         return username;
     }
@@ -95,6 +103,7 @@ public class JwtTokenUtil {
         } catch (ExpiredJwtException e) {
             // e.printStackTrace();
             log.info("JWT 令牌过期");
+            return null;
         }
         return claims;
 

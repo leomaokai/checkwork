@@ -43,6 +43,8 @@ public interface ITeacherService extends IService<Teacher> {
 
     RespBean deleteStudent(String studentId);
 
+    RespBean disposeDesignToClasses(Integer[] designIds, LocalDateTime end, Integer[] classIds, String teaId);
+
 //    RespBean checkCode(Integer workId, String name);
 
 //    RespBean updateWorkTitle(Integer workId, String workTitle);

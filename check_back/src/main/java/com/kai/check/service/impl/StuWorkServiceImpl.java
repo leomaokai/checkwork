@@ -7,10 +7,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kai.check.mapper.*;
 import com.kai.check.pojo.*;
 import com.kai.check.service.IStuWorkService;
-import com.kai.check.utils.CheckCode;
-import com.kai.check.utils.RespBean;
-import com.kai.check.utils.RespBeanEnum;
-import com.kai.check.utils.RespPageBean;
+import com.kai.check.utils.*;
+import com.kai.check.utils.commit.CommitFactory;
+import com.kai.check.utils.commit.CommitUtils;
+import com.kai.check.utils.commit.ICommit;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,8 +40,6 @@ public class StuWorkServiceImpl extends ServiceImpl<StuWorkMapper, StuWork> impl
     @Resource
     private StuWorkMapper stuWorkMapper;
     @Resource
-    private WorkClassMapper workClassMapper;
-    @Resource
     private TeaWorkMapper teaWorkMapper;
     @Resource
     private StudentMapper studentMapper;
@@ -59,22 +57,6 @@ public class StuWorkServiceImpl extends ServiceImpl<StuWorkMapper, StuWork> impl
 
     @Override
     @Transactional
-    public List<StuWork> listWorks(String name) {
-        List<StuWork> stuWorks = stuWorkMapper.selectList(new QueryWrapper<StuWork>().eq("stu_id", name));
-        for (StuWork stuWork : stuWorks) {
-            Integer workId = stuWork.getWorkId();
-            if (stuWork.getIsCommit().equals("未提交")) {
-                stuWork.setWorkName("未提交");
-                stuWork.setWorkUrl("null");
-            }
-            WorkClass workClass = workClassMapper.selectOne(new QueryWrapper<WorkClass>().eq("id", workId));
-            //stuWork.setWorkClass(workClass);
-        }
-        return stuWorks;
-    }
-
-    @Override
-    @Transactional
     public RespBean deleteWork(Integer stuWorkId) {
         StuWork stuWork = stuWorkMapper.selectOne(new QueryWrapper<StuWork>().eq("id", stuWorkId));
         stuWork.setIsCommit("未提交");
@@ -82,30 +64,6 @@ public class StuWorkServiceImpl extends ServiceImpl<StuWorkMapper, StuWork> impl
             return RespBean.success();
         }
         return RespBean.error();
-    }
-
-    @Override
-    public RespBean downWork(Integer stuWorkId, Integer isDown, HttpServletResponse response) {
-        StuWork stuWork = stuWorkMapper.selectById(stuWorkId);
-        if (stuWork.getIsCommit().equals("未提交")) {
-            return RespBean.error(RespBeanEnum.COMMIT_NOT);
-        }
-        String workUrl = stuWork.getWorkUrl();
-        String openStyle = "attachment";
-        if (isDown == 0) {
-            // isDown =0 在线打开
-            openStyle = "inline";
-        }
-        try (
-                FileInputStream inputStream = new FileInputStream(new File(workUrl));
-                ServletOutputStream outputStream = response.getOutputStream();
-        ) {
-            response.setHeader("content-disposition", openStyle + ";fileName" + URLEncoder.encode(stuWork.getWorkName(), "UTF-8"));
-            IOUtils.copy(inputStream, outputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return RespBean.success();
     }
 
     @Override
@@ -123,93 +81,38 @@ public class StuWorkServiceImpl extends ServiceImpl<StuWorkMapper, StuWork> impl
         return new RespPageBean(res.getTotal(), res.getRecords());
     }
 
-    // 上传作业模块二合一
-//    @Override
-//    @Transactional
-//    public RespBean uploadStuWork(Integer stuWorkId, MultipartFile workFile, String name) {
-//        StuWork stuWork = stuWorkMapper.selectById(stuWorkId);
-//        if (stuWork != null) {
-//            Integer workId = stuWork.getWorkId();
-//            TeaWork teaWork = teaWorkMapper.selectById(workId);
-//            // 得到作业目录
-//            String workDir = teaWork.getWorkDir();
-//            StringBuilder workUrl = new StringBuilder(100);
-//            workUrl.append(workDir).append("/code/");
-//            // 设置作业新名字
-//            Student student = studentMapper.selectById(name);
-//            String stuName = student.getStuName();
-//            ClassTea classTea = classTeaMapper.selectById(student.getStuClassId());
-//            String className = classTea.getClassName();
-//            // 得到截止时间
-//            ClassWork classWork = classWorkMapper.selectOne(new QueryWrapper<ClassWork>().eq("class_id", classTea.getId()).eq("work_id", workId));
-//            LocalDateTime endTime = classWork.getEndTime();
-//            // 得到作业类型
-//            String originalFilename = workFile.getOriginalFilename();
-//            String ext = FilenameUtils.getExtension(originalFilename);
-//            if (ext == null || ext.isEmpty() || (!ext.equals("java") && !ext.equals("c") && !ext.equals("cpp") && !ext.equals("py"))) {
-//                return RespBean.error(RespBeanEnum.COMMIT_ERROR);
-//            }
-//            // 设置新的作业名
-//            StringBuilder newFilename = new StringBuilder(50);
-//            newFilename.append(className).append("-").append(name).append("-").append(stuName).append(".").append(ext);
-//            workUrl.append(newFilename);
-//            if (!this.commitWorkToFile(workFile, workUrl.toString())) {
-//                return RespBean.error(RespBeanEnum.COMMIT_ERROR);
-//            }
-//            stuWork.setWorkName(newFilename.toString()).setWorkUrl(workUrl.toString()).setWorkExt(ext).setIsCommit("已提交");
-//            if (LocalDateTime.now().isAfter(endTime)) {
-//                stuWork.setIsCommit("超时提交");
-//            }
-//            if (stuWorkMapper.updateById(stuWork) == 1) {
-//                return RespBean.success(RespBeanEnum.COMMIT_SUCCESS);
-//            }
-//        }
+//    public RespBean stuCommitCode(Integer workId,MultipartFile workCode,String name){
+//        ICommit commit = CommitFactory.getCommit(1);
+//        int commit1 = commit.commit(workId,workCode,name);
+//        if(commit1==1){
 //
-//        return RespBean.error(RespBeanEnum.COMMIT_ERROR);
+//        }
+//        return null;
 //    }
 //
-//    @Override
-//    @Transactional
-//    public RespBean uploadStuWorkPDF(Integer stuWorkId, MultipartFile workFile, String name) {
-//        StuWork stuWork = stuWorkMapper.selectById(stuWorkId);
-//        if (stuWork != null) {
-//            Integer workId = stuWork.getWorkId();
-//            TeaWork teaWork = teaWorkMapper.selectById(workId);
-//            // 得到作业目录
-//            String workDir = teaWork.getWorkDir();
-//            StringBuilder workUrl = new StringBuilder(100);
-//            workUrl.append(workDir).append("/pdf/");
-//            // 设置作业新名字
-//            Student student = studentMapper.selectById(name);
-//            String stuName = student.getStuName();
-//            ClassTea classTea = classTeaMapper.selectById(student.getStuClassId());
-//            String className = classTea.getClassName();
-//            // 得到截止时间
-//            ClassWork classWork = classWorkMapper.selectOne(new QueryWrapper<ClassWork>().eq("class_id", classTea.getId()).eq("work_id", workId));
-//            LocalDateTime endTime = classWork.getEndTime();
-//            // 得到作业类型
-//            String originalFilename = workFile.getOriginalFilename();
-//            String ext = FilenameUtils.getExtension(originalFilename);
-//            if (ext == null || ext.isEmpty() || !ext.equals("pdf")) {
-//                return RespBean.error(RespBeanEnum.COMMIT_ERROR);
-//            }
-//            // 设置新的作业名
-//            StringBuilder newFilename = new StringBuilder(50);
-//            newFilename.append(className).append("-").append(name).append("-").append(stuName).append(".").append(ext);
-//            workUrl.append(newFilename);
-//            if (!this.commitWorkToFile(workFile, workUrl.toString())) {
-//                return RespBean.error(RespBeanEnum.COMMIT_ERROR);
-//            }
-//            stuWork.setWorkName(newFilename.toString()).setWorkUrl(workUrl.toString()).setWorkExt(ext).setIsCommit("已提交");
-//            if (LocalDateTime.now().isAfter(endTime)) {
-//                stuWork.setIsCommit("超时提交");
-//            }
-//            if (stuWorkMapper.updateById(stuWork) == 1) {
-//                return RespBean.success(RespBeanEnum.COMMIT_SUCCESS);
-//            }
+//    public RespBean stuCommitPdf(Integer workId,MultipartFile workPdf,String name){
+//        ICommit commit = CommitFactory.getCommit(2);
+//        int commit1 = commit.commit(workId, workPdf, name);
+//        if(commit1==1){
+//
 //        }
-//        return RespBean.error(RespBeanEnum.COMMIT_ERROR);
+//
+//        return null;
 //    }
+//
+//    public RespBean stuCommitDesignCode(Integer designId,MultipartFile designCode,String name){
+//        ICommit commit = CommitFactory.getCommit(3);
+//        int commit1 = commit.commit(designId, designCode, name);
+//
+//        return null;
+//    }
+//
+//    public RespBean stuCommitDesignPdf(Integer designId,MultipartFile designPdf,String name){
+//        ICommit commit = CommitFactory.getCommit(4);
+//        int commit1 = commit.commit(designId, designPdf, name);
+//        return null;
+//    }
+
 
     @Override
     @Transactional
@@ -260,7 +163,7 @@ public class StuWorkServiceImpl extends ServiceImpl<StuWorkMapper, StuWork> impl
             }
             workUrl.append(newFilename);
             String workPath = workUrl.toString();
-            if (!this.commitWorkToFile(workFile, workPath)) {
+            if (CommitUtils.commitWorkToFile(workFile, workPath)) {
                 return RespBean.error(RespBeanEnum.COMMIT_ERROR);
             }
             // 相同扩展名的作业在作业结果表中生成数据
@@ -329,7 +232,7 @@ public class StuWorkServiceImpl extends ServiceImpl<StuWorkMapper, StuWork> impl
         CheckCode.deleteWorkFileByPath(workUrl);
         String pdfPath = stuWork.getPdfPath();
         CheckCode.deleteWorkFileByPath(pdfPath);
-        stuWork.setWorkName("未提交").setWorkUrl("").setPdfName("未提交").setPdfPath("").setIsCommit("未提交").setWorkExt("");
+        stuWork.setWorkName("未提交").setWorkUrl("").setPdfName("未提交").setPdfPath("").setIsCommit("未提交").setWorkExt("").setIsChecked(0);
         if (stuWorkMapper.updateById(stuWork) == 1) {
             workResultMapper.deleteStuWorkId(stuWorkId);
             return RespBean.success(RespBeanEnum.DELETE_SUCCESS);
@@ -351,49 +254,8 @@ public class StuWorkServiceImpl extends ServiceImpl<StuWorkMapper, StuWork> impl
             url = stuWork.getPdfPath();
             fileName = stuWork.getPdfName();
         }
-        if (url == null || url.equals("")) {
-//            // return RespBean.error(RespBeanEnum.DOWN_ERROR);
-            try {
-                response.setHeader("content-disposition", "attachment" + ";filename=" + URLEncoder.encode("", "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-
-
-        try (
-                ServletOutputStream outputStream = response.getOutputStream();
-                FileInputStream inputStream = new FileInputStream(url);
-        ) {
-            response.setHeader("content-disposition", "attachment" + ";filename=" + URLEncoder.encode(fileName, "UTF-8"));
-            IOUtils.copy(inputStream, outputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //return RespBean.success(RespBeanEnum.DOWN_SUCCESS);
+        DownFileUtil.downFile(url, fileName, response);
     }
 
-    private boolean commitWorkToFile(MultipartFile workFile, String workPath) {
-        File file = new File(workPath);
-        if (file.exists()) {
-            file.delete();
-        }
-        try (
-                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file, true));
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(workFile.getInputStream());
-        ) {
-            byte[] bytes = new byte[1024];
-            int len = 0;
-            while ((len = bufferedInputStream.read(bytes)) != -1) {
-                bufferedOutputStream.write(bytes, 0, len);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (file.exists()) {
-            return true;
-        }
-        return false;
-    }
+
 }

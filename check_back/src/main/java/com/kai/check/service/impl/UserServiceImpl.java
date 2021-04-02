@@ -52,9 +52,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Resource
     private StuWorkMapper stuWorkMapper;
     @Resource
-    private WorkClassMapper workClassMapper;
+    private ClassWorkMapper classWorkMapper;
     @Resource
     private WorkResultMapper workResultMapper;
+    @Resource
+    private TeaWorkMapper teaWorkMapper;
     @Resource
     private MenusMapper menusMapper;
     @Resource
@@ -96,6 +98,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         // 更新登录对象
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        System.out.println("authenticationToken==>"+authenticationToken);
         // 得到token
         String token = jwtTokenUtil.generateToken(userDetails);
         Map<String, Object> map = new HashMap<>();
@@ -226,14 +229,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 studentMapper.deleteById(stuId);
                 userMapper.deleteById(stuId);
             }
-            List<WorkClass> workClasses = workClassMapper.selectList(new QueryWrapper<WorkClass>().eq("class_id", classId));
-            for (WorkClass workClass : workClasses) {
-                Integer workId = workClass.getId();
-                workResultMapper.deleteByWorkId(workId);
-                workClassMapper.deleteById(workId);
-            }
             classTeaMapper.deleteById(classId);
         }
+        classWorkMapper.delete(new QueryWrapper<ClassWork>().eq("tea_id",id));
+        List<TeaWork> teaWorks = teaWorkMapper.selectList(new QueryWrapper<TeaWork>().eq("tea_id", id));
+        for (TeaWork teaWork : teaWorks) {
+            Integer workId = teaWork.getWorkId();
+            workResultMapper.deleteByWorkId(workId);
+        }
+        teaWorkMapper.delete(new QueryWrapper<TeaWork>().eq("tea_id",id));
         teacherMapper.deleteById(id);
         if (userMapper.deleteById(id) == 1) {
             return RespBean.success(RespBeanEnum.DELETE_SUCCESS);

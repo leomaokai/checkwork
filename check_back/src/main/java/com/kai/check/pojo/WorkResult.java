@@ -45,9 +45,6 @@ public class WorkResult implements Serializable {
     @ApiModelProperty(value = "重复率")
     private String workResult;
 
-    @ApiModelProperty(value = "作业")
-    @TableField(exist = false)
-    private WorkClass workClass;
 
     @ApiModelProperty(value = "学生作业1")
     @TableField(exist = false)

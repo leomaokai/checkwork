@@ -1,10 +1,14 @@
 package com.kai.check.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.kai.check.pojo.ClassDesign;
 import com.kai.check.pojo.Student;
+import com.kai.check.pojo.TeaDesign;
 import com.kai.check.utils.RespBean;
 import com.kai.check.utils.RespPageBean;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * <p>
@@ -20,5 +24,7 @@ public interface IStudentService extends IService<Student> {
 
     Student getInfo(String name);
 
-    RespBean commitWork(Integer workId, MultipartFile workFile,String name);
+    List<String> listClassStudents(String name);
+
+    List<ClassDesign> listClassDesigns(String name);
 }
