@@ -1,5 +1,6 @@
 package com.kai.check.utils.commit;
 
+
 import com.kai.check.service.IDesignResultService;
 import com.kai.check.service.IStuDesignService;
 import com.kai.check.service.IStuGroupService;
@@ -19,7 +20,8 @@ public class CommitDesignCode implements ICommit{
 
     @Override
     @Transactional
-    public int commit(Integer id, MultipartFile file, String name) {
-        return 0;
+    public boolean commit(Integer id, MultipartFile file, String name) {
+
+        return false;
     }
 }

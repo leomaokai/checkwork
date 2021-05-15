@@ -49,5 +49,12 @@
         WHERE cd.`tea_id` = #{teaId}
           AND cd.`class_id` = ct.`id`
     </select>
+    <select id="listClassOfDesigns" resultType="java.lang.String">
+        SELECT td.`design_title`
+        FROM t_class_design cd,
+             t_tea_design td
+        WHERE cd.`class_id` = #{classId}
+          AND cd.`design_id` = td.`id`
+    </select>
 
 </mapper>

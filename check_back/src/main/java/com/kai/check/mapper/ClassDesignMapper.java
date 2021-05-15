@@ -21,4 +21,6 @@ public interface ClassDesignMapper extends BaseMapper<ClassDesign> {
     List<ClassDesign> listClassDesigns(@Param("stuId") String name);
 
     List<ClassDesign> listClassToDesign(@Param("teaId") String name);
+
+    List<String> listClassOfDesigns(@Param("classId") Integer classId);
 }

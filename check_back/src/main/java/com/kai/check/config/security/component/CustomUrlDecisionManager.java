@@ -22,12 +22,12 @@ public class CustomUrlDecisionManager implements AccessDecisionManager {
             String needRole = configAttribute.getAttribute();
             if("用户".equals(needRole)){
                 if(authentication instanceof AnonymousAuthenticationToken){
-                    throw  new AccessDeniedException("尚未登录,请登录");
+                    throw new AccessDeniedException("尚未登录,请登录");
                 }else {
                     return;
                 }
             }
-            //System.out.println("CustomUrlDecisionManager==needRole==>"+needRole);
+            System.out.println("CustomUrlDecisionManager==needRole==>"+needRole);
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
             for (GrantedAuthority authority : authorities) {
                 //System.out.println("CustomUrlDecisionManager==authority==>"+authority);

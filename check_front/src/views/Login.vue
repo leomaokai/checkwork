@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="back">
     <el-form
       :rules="rulesLogin"
       ref="loginForm"
@@ -155,10 +155,16 @@ export default {
 };
 </script>
 <style>
+.back {
+  background: url("../../public/cumt.jpg");
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+}
 .loginContainer {
   border-radius: 15px;
   background-clip: padding-box;
-  margin: 180px auto;
+  margin: 0 auto;
+  margin-top: 13%;
   width: 350px;
   padding: 15px 35px 15px 35px;
   background: white;

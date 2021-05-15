@@ -16,4 +16,7 @@ import java.util.List;
 public interface IClassDesignService extends IService<ClassDesign> {
 
     List<ClassDesign> listClassToDesign(String name);
+
+    List<String> listClassOfDesigns(Integer classId);
+
 }

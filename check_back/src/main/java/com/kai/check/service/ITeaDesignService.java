@@ -23,4 +23,6 @@ public interface ITeaDesignService extends IService<TeaDesign> {
     List<TeaDesign> listDesignIds(String name);
 
     void downDesignPdf(Integer designId, HttpServletResponse response);
+
+    RespBean deleteDesignByDesignId(Integer designId);
 }

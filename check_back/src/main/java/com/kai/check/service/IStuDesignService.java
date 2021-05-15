@@ -2,6 +2,8 @@ package com.kai.check.service;
 
 import com.kai.check.pojo.StuDesign;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.kai.check.utils.RespBean;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,4 +20,6 @@ public interface IStuDesignService extends IService<StuDesign> {
     List<StuDesign> listClassDesigns(Integer classId);
 
     StuDesign getGroupDesignInfo(String name);
+
+    RespBean commitWork(Integer groupDesignId, MultipartFile workFile, String name, boolean flag);
 }

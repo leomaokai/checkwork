@@ -304,6 +304,20 @@ public class TeacherController {
         return stuGroupService.listStudentsGroups(classId);
     }
 
+    @ApiOperation(value = "查看该班级的课程设计")
+    @GetMapping("/listClassOfDesigns/{classId}")
+    public List<String> listClassOfDesigns(@PathVariable("classId") Integer classId){
+        return classDesignService.listClassOfDesigns(classId);
+    }
+
+    // 仅不能再布置该设计了
+    @ApiOperation(value = "删除该课程设计")
+    @DeleteMapping("/deleteTheDesign/{designId}")
+    public RespBean deleteTheDesign(@PathVariable("designId") Integer designId){
+        return teaDesignService.deleteDesignByDesignId(designId);
+    }
+
+
 //    @ApiOperation(value = "新查询作业标题")
 //    @GetMapping("/listWorkTitles")
 //    public List<TeaWork> listWorkTitles(Principal principal) {

@@ -25,6 +25,12 @@
               <el-button
                 size="mini"
                 type="primary"
+                @click="selectClassDesigns(scope.$index, scope.row)"
+                >查看布置的课程设计</el-button
+              >
+              <el-button
+                size="mini"
+                type="primary"
                 @click="selectGroup(scope.$index, scope.row)"
                 >查看分组情况</el-button
               >
@@ -174,7 +180,85 @@
         </div>
       </el-dialog>
     </div>
+    <!-- 查看分组情况 -->
+    <div>
+      <el-dialog title="分组情况" :visible.sync="selectStudentsGroupVisible">
+        <el-table :data="studentsGroupData">
+          <el-table-column type="index" width="50"> </el-table-column>
+          <el-table-column
+            property="designTitle"
+            label="设计标题"
+            width="100"
+          ></el-table-column>
+          <el-table-column
+            property="id"
+            label="组ID"
+            width="100"
+          ></el-table-column>
+          <el-table-column
+            property="stuId1"
+            label="组长"
+            width="100"
+          ></el-table-column>
+          <el-table-column
+            property="stuId2"
+            label="组员1"
+            width="100"
+          ></el-table-column>
+          <el-table-column
+            property="stuId3"
+            label="组员2"
+            width="100"
+          ></el-table-column>
+          <el-table-column
+            property="stuId4"
+            label="组员3"
+            width="100"
+          ></el-table-column>
+        </el-table>
+      </el-dialog>
+    </div>
 
+    <!-- 查看布置的课程设计 -->
+    <div>
+      <el-dialog
+        title="已布置的课程设计"
+        :visible.sync="selectClassDesignsVisible"
+        width="300px"
+      >
+        <div v-for="(design, index) in classDesignData" :key="index">
+          <span>{{ design }}</span>
+          <el-divider></el-divider>
+        </div>
+      </el-dialog>
+    </div>
+
+    <!-- 查看课程设计结果 -->
+    <div>
+      <el-dialog title="小组设计结果" :visible.sync="selectDesignResultVisible">
+        <el-table :data="selectDesignResultData">
+          <el-table-column type="index" width="50"> </el-table-column>
+          <el-table-column
+            property="groupId"
+            label="组ID"
+            width="80"
+          ></el-table-column>
+          <el-table-column
+            property="designTitle"
+            label="设计标题"
+            width="100"
+          ></el-table-column>
+          <el-table-column property="codeName" label="源代码"></el-table-column>
+          <el-table-column property="pdfName" label="PDF"></el-table-column>
+          <el-table-column
+            property="isCommit"
+            label="完成情况"
+          ></el-table-column>
+        </el-table>
+      </el-dialog>
+    </div>
+
+    <!-- 查看查重结果 -->
     <div></div>
   </div>
 </template>
@@ -184,6 +268,15 @@ export default {
   name: "TeaDesign",
   data() {
     return {
+      // 查看课程设计结果
+      selectDesignResultVisible: false,
+      selectDesignResultData: [],
+      // 查看布置的课程设计
+      selectClassDesignsVisible: false,
+      classDesignData: [],
+      // 分组情况
+      selectStudentsGroupVisible: false,
+      studentsGroupData: [],
       // 添加课程设计
       insertDesignFormRules: {
         designTitle: [
@@ -267,6 +360,27 @@ export default {
     };
   },
   methods: {
+    // 查看小组设计结果
+    selectDesignResult(index, row) {
+      this.$get("/teacher/listClassDesigns/" + row.classId).then((res) => {
+        this.selectDesignResultData = res;
+        this.selectDesignResultVisible = true;
+      });
+    },
+    // 查看布置的课程设计
+    selectClassDesigns(index, row) {
+      this.$get("/teacher/listClassOfDesigns/" + row.classId).then((res) => {
+        this.classDesignData = res;
+        this.selectClassDesignsVisible = true;
+      });
+    },
+    // 分组情况
+    selectGroup(index, row) {
+      this.$get("/teacher/listStudentsGroups/" + row.classId).then((res) => {
+        this.studentsGroupData = res;
+        this.selectStudentsGroupVisible = true;
+      });
+    },
     // 添加设计模块
     submitUpload() {
       this.$refs.upload.submit();
@@ -310,7 +424,24 @@ export default {
       this.listDesignTitles();
       this.listClasses();
     },
-    deleteDesignTitle() {},
+    deleteDesignTitle(id) {
+      this.$confirm("确定删除，是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$delete("/teacher/deleteTheDesign/" + id).then((res) => {
+            this.listDesignTitles();
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+    },
     submitCreateDesignForm(createDesignFormModel) {
       this.$refs[createDesignFormModel].validate((valid) => {
         if (valid) {

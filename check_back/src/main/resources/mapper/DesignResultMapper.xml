@@ -4,16 +4,23 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.kai.check.pojo.DesignResult">
-        <id column="id" property="id" />
-        <result column="design_id" property="designId" />
-        <result column="design_first_id" property="designFirstId" />
-        <result column="design_second_id" property="designSecondId" />
-        <result column="work_result" property="workResult" />
+        <id column="id" property="id"/>
+        <result column="design_id" property="designId"/>
+        <result column="design_first_id" property="designFirstId"/>
+        <result column="design_second_id" property="designSecondId"/>
+        <result column="work_result" property="workResult"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, design_id, design_first_id, design_second_id, work_result
+        id
+        , design_id, design_first_id, design_second_id, work_result
     </sql>
+    <delete id="deleteGroupDesignId">
+        delete
+        from t_design_result
+        where design_first_id = #{groupDesignId}
+           or design_second_id = #{groupDesignId}
+    </delete>
 
 </mapper>

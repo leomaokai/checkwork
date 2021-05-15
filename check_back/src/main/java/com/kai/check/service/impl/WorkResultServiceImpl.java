@@ -31,4 +31,6 @@ public class WorkResultServiceImpl extends ServiceImpl<WorkResultMapper, WorkRes
         IPage<WorkResult> res = workResultMapper.listCheckResult(workResultPage, workId);
         return new RespPageBean(res.getTotal(),res.getRecords());
     }
+
+
 }

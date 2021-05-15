@@ -16,7 +16,7 @@ public class CommitDesignPdf implements ICommit{
     @Resource
     private IDesignResultService designResultService;
     @Override
-    public int commit(Integer id, MultipartFile file, String name) {
-        return 0;
+    public boolean commit(Integer id, MultipartFile file, String name) {
+        return false;
     }
 }

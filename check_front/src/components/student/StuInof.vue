@@ -64,6 +64,7 @@ export default {
     getStudentInfo() {
       this.$get("/student/info").then((res) => {
         this.sutdentInfoModel = res;
+        window.sessionStorage.setItem("stuId", this.sutdentInfoModel.stuId);
       });
     },
     submitForm() {

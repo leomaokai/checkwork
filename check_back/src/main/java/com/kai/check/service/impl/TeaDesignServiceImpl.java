@@ -69,9 +69,13 @@ public class TeaDesignServiceImpl extends ServiceImpl<TeaDesignMapper, TeaDesign
         teaDesign.setDesignUrl(url);
         // 提交目录
         String designResourceDir = designResource + "/" + name + "/" + designTitle;
-        File file = new File(designResourceDir);
-        if (!file.exists()) {
-            file.mkdirs();
+        File codeDir = new File(designResourceDir, "code");
+        if (!codeDir.exists()) {
+            codeDir.mkdirs();
+        }
+        File pdfDir = new File(designResourceDir, "pdf");
+        if (!pdfDir.exists()) {
+            pdfDir.mkdirs();
         }
         teaDesign.setDesignDir(designResourceDir);
         teaDesignMapper.insert(teaDesign);
@@ -94,5 +98,21 @@ public class TeaDesignServiceImpl extends ServiceImpl<TeaDesignMapper, TeaDesign
         String designTitle = teaDesign.getDesignTitle();
         String fileName = designTitle + ".pdf";
         DownFileUtil.downFile(designUrl, fileName, response);
+    }
+
+    @Override
+    @Transactional
+    public RespBean deleteDesignByDesignId(Integer designId) {
+        TeaDesign teaDesign = teaDesignMapper.selectById(designId);
+        if (teaDesign != null) {
+            String designUrl = teaDesign.getDesignUrl();
+            File file = new File(designUrl);
+            if (file.exists()) {
+                file.delete();
+            }
+            teaDesignMapper.deleteById(teaDesign.getId());
+            return RespBean.success(RespBeanEnum.DELETE_SUCCESS);
+        }
+        return RespBean.error(RespBeanEnum.DELETE_ERROR);
     }
 }

@@ -6,6 +6,8 @@ import com.kai.check.service.*;
 import com.kai.check.utils.RespBean;
 import com.kai.check.utils.RespBeanEnum;
 import com.kai.check.utils.RespPageBean;
+import com.kai.check.utils.commit.CommitFactory;
+import com.kai.check.utils.commit.ICommit;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.models.auth.In;
 import lombok.Synchronized;
@@ -83,6 +85,11 @@ public class StudentController {
         String name = principal.getName();
 
         return stuWorkService.commitWork(stuWorkId, workFile, name, false);
+//        ICommit commit = CommitFactory.getCommit(1);
+//        if (commit.commit(stuWorkId, workFile, name)) {
+//            return RespBean.success(RespBeanEnum.COMMIT_SUCCESS);
+//        }
+//        return RespBean.error(RespBeanEnum.COMMIT_ERROR);
     }
 
     @ApiOperation(value = "新提交作业PDF")
@@ -93,6 +100,11 @@ public class StudentController {
         }
         String name = principal.getName();
         return stuWorkService.commitWork(stuWorkId, workFile, name, true);
+//        ICommit commit = CommitFactory.getCommit(2);
+//        if (commit.commit(stuWorkId, workFile, name)) {
+//            return RespBean.success(RespBeanEnum.COMMIT_SUCCESS);
+//        }
+//        return RespBean.error(RespBeanEnum.COMMIT_ERROR);
     }
 
     @ApiOperation(value = "新删除作业")
@@ -142,18 +154,38 @@ public class StudentController {
     }
 
     @ApiOperation(value = "下载设计的pdf")
-    @GetMapping(value = "/downDesignPdf/{designId}",produces = "application/octet-stream")
-    public void downDesignPdf(@PathVariable("designId") Integer designId, HttpServletResponse response){
-        if(designId==null){
+    @GetMapping(value = "/downDesignPdf/{designId}", produces = "application/octet-stream")
+    public void downDesignPdf(@PathVariable("designId") Integer designId, HttpServletResponse response) {
+        if (designId == null) {
             return;
         }
-        teaDesignService.downDesignPdf(designId,response);
+        teaDesignService.downDesignPdf(designId, response);
     }
 
     @ApiOperation(value = "查询小组成员")
     @GetMapping("/selectGroupMembers")
-    public StuGroup selectGroupMembers(Principal principal){
+    public StuGroup selectGroupMembers(Principal principal) {
         String name = principal.getName();
         return stuGroupService.selectGroupMembers(name);
+    }
+
+    @ApiOperation(value = "新提交课程设计源代码")
+    @PostMapping("/uploadStuDesignCode")
+    public RespBean uploadStuDesignCode(@RequestParam("workFile") MultipartFile workFile, @RequestParam("groupDesignId") Integer groupDesignId, Principal principal) {
+        if (groupDesignId == null || workFile == null || principal == null) {
+            return RespBean.error(RespBeanEnum.COMMIT_ERROR);
+        }
+        String name = principal.getName();
+        return stuDesignService.commitWork(groupDesignId, workFile, name, false);
+    }
+
+    @ApiOperation(value = "新提交课程设计PDF")
+    @PostMapping("/uploadStuDesignPDF")
+    public RespBean uploadStuDesignPDF(@RequestParam("workFile") MultipartFile workFile, @RequestParam("groupDesignId") Integer groupDesignId, Principal principal) {
+        if (groupDesignId == null || workFile == null || principal == null) {
+            return RespBean.error(RespBeanEnum.COMMIT_ERROR);
+        }
+        String name = principal.getName();
+        return stuDesignService.commitWork(groupDesignId, workFile, name, true);
     }
 }

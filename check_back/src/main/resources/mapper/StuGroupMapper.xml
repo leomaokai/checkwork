@@ -38,6 +38,7 @@
     </select>
     <select id="listStudentsGroups" resultMap="listStudentsGroupsResultMap">
         SELECT
+            sg.`id`,
             td.`design_title`,
             sg.`stu_id1`,
             sg.`stu_id2`,

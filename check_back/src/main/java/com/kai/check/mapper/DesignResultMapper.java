@@ -2,6 +2,7 @@ package com.kai.check.mapper;
 
 import com.kai.check.pojo.DesignResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface DesignResultMapper extends BaseMapper<DesignResult> {
 
+    void deleteGroupDesignId(@Param("groupDesignId")Integer groupDesignId);
 }

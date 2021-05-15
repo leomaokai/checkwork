@@ -15,4 +15,5 @@ import com.kai.check.utils.RespPageBean;
 public interface IWorkResultService extends IService<WorkResult> {
 
     RespPageBean listCheckResult(Integer currentPage, Integer size, Integer workId);
+
 }

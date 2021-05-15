@@ -49,6 +49,8 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     private ClassWorkMapper classWorkMapper;
     @Resource
     private ClassDesignMapper classDesignMapper;
+    @Resource
+    private TeaDesignMapper teaDesignMapper;
     @Value("${kai.resource}")
     private String resource;
     @Value("${kai.result}")
@@ -367,6 +369,7 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
                 classDesignMapper.insert(classDesign);
             }
         }
+
         return RespBean.success(RespBeanEnum.DISPOSE_SUCCESS);
     }
 

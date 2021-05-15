@@ -26,4 +26,9 @@ public class ClassDesignServiceImpl extends ServiceImpl<ClassDesignMapper, Class
     public List<ClassDesign> listClassToDesign(String name) {
         return classDesignMapper.listClassToDesign(name);
     }
+
+    @Override
+    public List<String> listClassOfDesigns(Integer classId) {
+        return classDesignMapper.listClassOfDesigns(classId);
+    }
 }
