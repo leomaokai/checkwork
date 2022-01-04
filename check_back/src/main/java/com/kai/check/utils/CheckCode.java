@@ -104,6 +104,18 @@ public class CheckCode {
         return result;
     }
 
+    public static boolean checkSelfFunction(String ext, StringBuilder newFileName, StringBuilder resultPath, String resourcePath) {
+        String firstCheck = CheckCode.check(resourcePath, resultPath.toString(), newFileName.toString(), newFileName.toString(), ext);
+        if (firstCheck.equals("-1")) {
+            File file = new File(resourcePath, newFileName.toString());
+            if (file.exists()) {
+                file.delete();
+            }
+            return true;
+        }
+        return false;
+    }
+
 //    public static boolean commitWorkToFile(MultipartFile workFile, String workPath) {
 //        File file = new File(workPath);
 //        if (file.exists()) {

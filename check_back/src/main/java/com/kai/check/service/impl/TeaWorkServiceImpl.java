@@ -9,6 +9,7 @@ import com.kai.check.utils.RespBean;
 import com.kai.check.utils.RespBeanEnum;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.File;
@@ -57,5 +58,12 @@ public class TeaWorkServiceImpl extends ServiceImpl<TeaWorkMapper, TeaWork> impl
     public List<TeaWork> listWorkTitles(String name) {
         List<TeaWork> teaWorks = teaWorkMapper.selectList(new QueryWrapper<TeaWork>().eq("tea_id", name));
         return teaWorks;
+    }
+
+    @Override
+    public RespBean createWorkNew(String createWorkTitle, MultipartFile createWorkPdf, String name) {
+        this.createWorkTitle(createWorkTitle,name);
+        String originalFilename = createWorkPdf.getOriginalFilename();
+        return null;
     }
 }

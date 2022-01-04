@@ -49,10 +49,7 @@
              t_student s2
         WHERE s1.`stu_id` = #{stuId}
           AND s2.`stu_id`!=s1.`stu_id`
-        AND
-        s2.`stu_class_id`=s1.`stu_class_id`
-        AND
-        s2.`is_group`=0
+          AND s2.`is_group`=0
     </select>
     <select id="getClassIdByStuId" resultType="java.lang.Integer">
         SELECT stu_class_id

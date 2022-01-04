@@ -87,10 +87,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         // 登录
         // 解密
-//        password = SecretUtil.desEncrypt(password);
-//        if (password == null) {
-//            return RespBean.error(RespBeanEnum.LOGIN_ERROR);
-//        }
+        password = SecretUtil.desEncrypt(password);
+        if (password == null) {
+            return RespBean.error(RespBeanEnum.LOGIN_ERROR);
+        }
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         if (null == userDetails || !passwordEncoder.matches(password, userDetails.getPassword())) {
             return RespBean.error(RespBeanEnum.LOGIN_ERROR);
@@ -115,8 +115,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Transactional
     public RespBean updatePassword(String oldPassword, String newPassword, String name) {
         // 解密
-//        oldPassword = SecretUtil.desEncrypt(oldPassword);
-//        newPassword = SecretUtil.desEncrypt(newPassword);
+        oldPassword = SecretUtil.desEncrypt(oldPassword);
+        newPassword = SecretUtil.desEncrypt(newPassword);
         User user = this.getUserByUsername(name);
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if (passwordEncoder.matches(oldPassword, user.getPassword())) {

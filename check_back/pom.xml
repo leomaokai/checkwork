@@ -123,7 +123,7 @@
             <artifactId>jplag</artifactId>
             <version>2.12.1</version><!--对应jar相应版本（不知道可随意）-->
             <scope>system</scope>
-            <systemPath>${pom.basedir}/lib/jplag-2.12.1-SNAPSHOT-jar-with-dependencies.jar</systemPath>
+            <systemPath>${project.basedir}/lib/jplag-2.12.1-SNAPSHOT-jar-with-dependencies.jar</systemPath>
         </dependency>
     </dependencies>
 
@@ -139,6 +139,22 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <!-- 引入系统范围内的依赖 -->
+                <configuration>
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
         </plugins>

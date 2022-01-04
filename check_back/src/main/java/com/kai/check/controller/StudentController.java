@@ -61,11 +61,11 @@ public class StudentController {
         return RespBean.error(RespBeanEnum.UPDATE_ERROR);
     }
 
-    @ApiOperation(value = "删除作业")
-    @DeleteMapping("/deleteWork/{id}")
-    public RespBean deleteWork(@PathVariable("id") Integer stuWorkId) {
-        return stuWorkService.deleteWork(stuWorkId);
-    }
+//    @ApiOperation(value = "删除作业")
+//    @DeleteMapping("/deleteWork/{id}")
+//    public RespBean deleteWork(@PathVariable("id") Integer stuWorkId) {
+//        return stuWorkService.deleteWork(stuWorkId);
+//    }
 
     @ApiOperation(value = "新查作业(分页)")
     @GetMapping("/selectStuWorks")
@@ -82,9 +82,10 @@ public class StudentController {
         if (stuWorkId == null || workFile == null || principal == null) {
             return RespBean.error(RespBeanEnum.COMMIT_ERROR);
         }
-        String name = principal.getName();
 
+        String name = principal.getName();
         return stuWorkService.commitWork(stuWorkId, workFile, name, false);
+
 //        ICommit commit = CommitFactory.getCommit(1);
 //        if (commit.commit(stuWorkId, workFile, name)) {
 //            return RespBean.success(RespBeanEnum.COMMIT_SUCCESS);

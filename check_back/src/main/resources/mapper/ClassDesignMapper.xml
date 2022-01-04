@@ -18,6 +18,7 @@
             <id column="tid" property="id"/>
             <result column="design_title" property="designTitle"/>
             <result column="design_url" property="designUrl"/>
+            <result column="design_limit" property="designLimit"/>
         </association>
     </resultMap>
     <resultMap id="listClassToDesignResultMap" type="com.kai.check.pojo.ClassDesign" extends="BaseResultMap">
@@ -33,6 +34,7 @@
         SELECT td.`id` AS tid,
                td.`design_title`,
                td.`design_url`,
+               td.`design_limit`,
                cd.`end_time`
         FROM t_student s,
              t_class_design cd,

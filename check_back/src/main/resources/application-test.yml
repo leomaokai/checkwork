@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/check_data_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3307/check_data?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
-    password: 123456
+    password: 767678
     hikari:
       # 连接池名
       pool-name: DateHikariCP
@@ -81,11 +81,11 @@ kai:
   # 设置相似度检查门限参数值
   sim: 1
   # 查重结果最大值,超过返回
-  resultMax: 80
-#  # 课程设计提交目录
-#  resourceDes: /check_resource_design
-#  # 课程设计查重结果目录
-#  resultDes: /check_result
+  resultMax: 95
+  #  # 课程设计提交目录
+  #  resourceDes: /check_resource_design
+  #  # 课程设计查重结果目录
+  #  resultDes: /check_result
   # 课程设计PDF目录
   design: /check_design
   designResource: /check_design_resource

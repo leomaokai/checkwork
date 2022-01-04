@@ -6,6 +6,7 @@ import com.kai.check.pojo.*;
 import com.kai.check.service.IStuDesignService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kai.check.utils.CheckCode;
+import com.kai.check.utils.DownFileUtil;
 import com.kai.check.utils.RespBean;
 import com.kai.check.utils.RespBeanEnum;
 import com.kai.check.utils.commit.CommitUtils;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -105,65 +107,99 @@ public class StuDesignServiceImpl extends ServiceImpl<StuDesignMapper, StuDesign
             }
             designUrl.append(newFileName);
             String designPath = designUrl.toString();
-            if (CommitUtils.commitWorkToFile(workFile, designPath)) {
-                return RespBean.error(RespBeanEnum.COMMIT_ERROR);
-            }
 
-            if (!flag) {
-                synchronized (StuDesignServiceImpl.class) {
-                    List<StuDesign> stuDesigns = stuDesignMapper.selectList(new QueryWrapper<StuDesign>().eq("design_id", designId));
-                    if (stuDesigns != null && !stuDesigns.isEmpty()) {
-                        StringBuilder resultPath = new StringBuilder(50);
-                        resultPath.append(designResult).append("/").append(teaId).append("/").append(designTitle);
-                        for (StuDesign design : stuDesigns) {
-                            if (!(design.getIsCommit().equals("未提交")) && design.getCodeExt().equals(ext)) {
+            synchronized (CommitUtils.class) {
+                if (CommitUtils.commitWorkToFile(workFile, designPath)) {
 
-                                Integer currentGroupDesignId = design.getId();
-                                DesignResult designResult = new DesignResult();
-                                designResult.setDesignFirstId(groupDesignId);
-                                designResult.setDesignSecondId(currentGroupDesignId);
-                                designResult.setDesignId(designId);
-                                String resourcePath = designDir + "/code";
-                                String checkStr = CheckCode.check(resourcePath, resultPath.toString(), newFileName.toString(), design.getCodeName(), ext);
+                    if (!flag) {
+                        List<StuDesign> stuDesigns = stuDesignMapper.selectList(new QueryWrapper<StuDesign>().eq("design_id", designId));
+                        if (stuDesigns != null && !stuDesigns.isEmpty()) {
+                            int maxResult = 0;
+                            StringBuilder resultPath = new StringBuilder(50);
+                            resultPath.append(designResult).append("/").append(teaId).append("/").append(designTitle);
 
-                                float check = Float.parseFloat(checkStr);
+                            String resourcePath = designDir + "/code";
+                            // 先自己查自己,排除中文
+                            if (CheckCode.checkSelfFunction(ext, newFileName, resultPath, resourcePath))
+                                return RespBean.error(RespBeanEnum.COMMIT_ERROR);
 
-                                if (checkStr.equals("-1") || check >= resultMax) {
-                                    File file = new File(resourcePath, newFileName.toString());
-                                    if (file.exists()) {
-                                        file.delete();
+                            for (StuDesign design : stuDesigns) {
+                                if (!(design.getIsCommit().equals("未提交")) &&
+                                        design.getCodeExt() != null &&
+                                        design.getCodeExt().equals(ext) &&
+                                        design.getCodePath() != null &&
+                                        !design.getCodePath().isEmpty()) {
+
+                                    File file1 = new File(designPath);
+                                    File file2 = new File(design.getCodePath());
+                                    if (!file1.exists() || !file2.exists()) {
+                                        continue;
                                     }
 
-                                    if (check >= resultMax) {
-                                        stuDesign.setIsChecked(1);
-                                        stuDesignMapper.updateById(stuDesign);
+                                    Integer currentGroupDesignId = design.getId();
+                                    DesignResult designResult = new DesignResult();
+                                    designResult.setDesignFirstId(groupDesignId);
+                                    designResult.setDesignSecondId(currentGroupDesignId);
+                                    designResult.setDesignId(designId);
+
+                                    String checkStr = CheckCode.check(resourcePath, resultPath.toString(), newFileName.toString(), design.getCodeName(), ext);
+
+                                    float check = Float.parseFloat(checkStr);
+
+                                    if (checkStr.equals("-1")) {
+                                        File file = new File(resourcePath, newFileName.toString());
+                                        if (file.exists()) {
+                                            file.delete();
+                                        }
+//                                        if (check >= resultMax) {
+//                                            stuDesign.setIsChecked(1);
+//                                            stuDesignMapper.updateById(stuDesign);
+//                                        }
+//                                        designResultMapper.deleteGroupDesignId(groupDesignId);
+                                        return RespBean.error(RespBeanEnum.COMMIT_ERROR);
                                     }
-                                    designResultMapper.deleteGroupDesignId(groupDesignId);
-                                    return RespBean.error(RespBeanEnum.COMMIT_ERROR);
+
+                                    maxResult = Math.max(maxResult, (int) check);
+                                    designResult.setWorkResult(checkStr);
+                                    designResultMapper.insert(designResult);
                                 }
-                                designResult.setWorkResult(checkStr);
-                                designResultMapper.insert(designResult);
                             }
+                            stuDesign.setIsChecked(maxResult);
+                            stuDesignMapper.updateById(stuDesign);
                         }
                     }
+                    if (flag) {
+                        stuDesign.setPdfName(newFileName.toString()).setPdfPath(designPath).setIsCommit("按时提交");
+                    } else {
+                        stuDesign.setCodeName(newFileName.toString()).setCodePath(designPath).setCodeExt(ext).setIsCommit("未提交PDF");
+                    }
+
+                    if (LocalDateTime.now().isAfter(endTime)) {
+                        stuDesign.setIsCommit("超时提交");
+                    }
+                    if (stuDesignMapper.updateById(stuDesign) == 1) {
+                        return RespBean.success(RespBeanEnum.COMMIT_SUCCESS);
+                    }
                 }
-            }
-
-            if (flag) {
-                stuDesign.setPdfName(newFileName.toString()).setPdfPath(designPath).setIsCommit("按时提交");
-            } else {
-                stuDesign.setCodeName(newFileName.toString()).setCodePath(designPath).setCodeExt(ext).setIsCommit("未提交PDF").setIsChecked(0);
-            }
-
-            if (LocalDateTime.now().isAfter(endTime)) {
-                stuDesign.setIsCommit("超时提交");
-            }
-            if (stuDesignMapper.updateById(stuDesign) == 1) {
-                return RespBean.success(RespBeanEnum.COMMIT_SUCCESS);
             }
         }
         return RespBean.error(RespBeanEnum.COMMIT_ERROR);
     }
 
 
+    @Override
+    public void downloadDesign(Integer groupDesignId, Integer flag, HttpServletResponse response) {
+        String url = "";
+        String fileName = "";
+        response.setHeader("content-type", "application/octet-stream");
+        StuDesign stuDesign = stuDesignMapper.selectById(groupDesignId);
+        if (flag == 1) {
+            url = stuDesign.getCodePath();
+            fileName = stuDesign.getCodeName();
+        } else if (flag == 2) {
+            url = stuDesign.getPdfPath();
+            fileName = stuDesign.getPdfName();
+        }
+        DownFileUtil.downFile(url, fileName, response);
+    }
 }

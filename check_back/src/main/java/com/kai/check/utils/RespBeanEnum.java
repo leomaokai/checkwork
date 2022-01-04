@@ -44,7 +44,9 @@ public enum RespBeanEnum {
     DOWN_ERROR(500222,"下载失败"),
     DOWN_SUCCESS(200210,"下载成功"),
     GROUP_ERROR(500223,"分组失败"),
-    GROUP_SUCCESS(200211,"分组成功")
+    GROUP_SUCCESS(200211,"分组成功"),
+    SCORE_SUCCESS(200212,"评分成功"),
+    SCORE_ERROR(500224,"评分失败")
 
 
     ;

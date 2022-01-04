@@ -140,6 +140,16 @@
               autocomplete="off"
             ></el-input>
           </el-form-item>
+          <el-form-item
+            label="选择人数限制"
+            :label-width="formLabelWidth"
+            prop="designLimit"
+          >
+            <el-input
+              v-model="insertDesignFormModel.designLimit"
+              autocomplete="off"
+            ></el-input>
+          </el-form-item>
           <el-upload
             class="upload-demo"
             ref="upload"
@@ -249,7 +259,21 @@
             width="100"
           ></el-table-column>
           <el-table-column property="codeName" label="源代码"></el-table-column>
+          <el-table-column property="isChecked" width="50"></el-table-column>
           <el-table-column property="pdfName" label="PDF"></el-table-column>
+          <el-table-column label="操作" width="90">
+            <template slot-scope="scope">
+              <el-button @click="downPdf(scope.row)" type="text" size="small"
+                >下载</el-button
+              >
+              <!-- <el-button
+                @click="inlinePdf(scope.row)"
+                type="text"
+                size="small"
+                disabled
+                >查看</el-button -->
+            </template>
+          </el-table-column>
           <el-table-column
             property="isCommit"
             label="完成情况"
@@ -360,6 +384,14 @@ export default {
     };
   },
   methods: {
+    downPdf(row) {
+      let flag = 2;
+      this.downStuWork(row.id, flag);
+    },
+    downStuWork(groupDesignId, flag) {
+      let url = "groupDesignId=" + groupDesignId + "&flag=" + flag;
+      this.$download("/teacher/downloadDesign?" + url).then((res) => {});
+    },
     // 查看小组设计结果
     selectDesignResult(index, row) {
       this.$get("/teacher/listClassDesigns/" + row.classId).then((res) => {
@@ -397,6 +429,7 @@ export default {
           this.submitUpload();
           this.insertDesignFormModel.designTitle = "";
           this.insertDesignFormVisible = false;
+          this.listDesignTitles();
         } else {
           console.log("error submit!!");
           return false;
@@ -488,6 +521,7 @@ export default {
           });
           this.$post("/teacher/disposeDesignToClasses" + url).then((res) => {
             this.initDesignClasses();
+            this.createDesignFormVisible = false;
             this.$refs[createDesignFormModel].resetFields();
           });
         })

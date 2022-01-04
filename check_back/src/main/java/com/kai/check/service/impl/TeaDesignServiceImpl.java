@@ -45,7 +45,7 @@ public class TeaDesignServiceImpl extends ServiceImpl<TeaDesignMapper, TeaDesign
 
     @Override
     @Transactional
-    public RespBean createDesign(String designTitle, MultipartFile designPdf, String name) {
+    public RespBean createDesign(String designTitle, Integer designLimit,MultipartFile designPdf, String name) {
         String teaId = teaDesignMapper.selectByDesignTitle(designTitle);
         System.out.println(teaId);
         if (teaId != null && teaId.equals(name)) {
@@ -53,6 +53,7 @@ public class TeaDesignServiceImpl extends ServiceImpl<TeaDesignMapper, TeaDesign
         }
         TeaDesign teaDesign = new TeaDesign();
         teaDesign.setDesignTitle(designTitle);
+        teaDesign.setDesignLimit(designLimit);
         teaDesign.setTeaId(name);
         // pdf 目录
         String designDirPdf = designDir + "/" + name;
@@ -79,7 +80,7 @@ public class TeaDesignServiceImpl extends ServiceImpl<TeaDesignMapper, TeaDesign
         }
         teaDesign.setDesignDir(designResourceDir);
         teaDesignMapper.insert(teaDesign);
-        if (CommitUtils.commitWorkToFile(designPdf, url)) {
+        if (!CommitUtils.commitWorkToFile(designPdf, url)) {
             return RespBean.error(RespBeanEnum.INSERT_ERROR);
         }
         return RespBean.success(RespBeanEnum.INSERT_SUCCESS);

@@ -41,8 +41,8 @@
         WHERE wr.`work_id` = #{id}
           AND wr.`work_first_id` = sw1.`id`
           AND wr.`work_second_id` = sw2.`id`
-          AND wr.`work_result`!='-1'
-        ORDER BY wr.`work_result` DESC
+          AND wr.`work_result`+0 > 20
+        ORDER BY wr.`work_result`+0 DESC
     </select>
 
 </mapper>

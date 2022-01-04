@@ -44,6 +44,9 @@ public class TeaDesign implements Serializable {
     @ApiModelProperty(value = "教师id")
     private String teaId;
 
+    @ApiModelProperty(value = "限制人数")
+    private Integer designLimit;
+
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     @TableField(fill = FieldFill.INSERT)

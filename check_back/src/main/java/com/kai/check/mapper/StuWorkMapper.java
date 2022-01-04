@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author kai
@@ -18,7 +18,9 @@ public interface StuWorkMapper extends BaseMapper<StuWork> {
 
     void deleteByStuId(@Param("stuId") String stuId);
 
-    IPage<StuWork> getClassStudentWorks(Page<StuWork> stuWorkPage,@Param("classId") Integer classId,@Param("workId") Integer workId);
+    IPage<StuWork> getClassStudentWorks(Page<StuWork> stuWorkPage, @Param("classId") Integer classId, @Param("workId") Integer workId);
 
-    IPage<StuWork> selectStuWorks(Page<StuWork> stuWorkPage,@Param("stuId") String name);
+    IPage<StuWork> selectStuWorks(Page<StuWork> stuWorkPage, @Param("stuId") String name);
+
+    boolean scoreWork(@Param("stuWorkId") Integer stuWorkId, @Param("score") Integer score);
 }

@@ -3,6 +3,7 @@ package com.kai.check.utils.commit;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class CommitUtils {
 
@@ -23,7 +24,7 @@ public class CommitUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return !file.exists();
+        return file.exists();
     }
 
 }

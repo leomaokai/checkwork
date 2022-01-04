@@ -18,7 +18,7 @@ import java.util.List;
  */
 public interface ITeaDesignService extends IService<TeaDesign> {
 
-    RespBean createDesign(String designTitle, MultipartFile designPdf, String name);
+    RespBean createDesign(String designTitle, Integer designLimit,MultipartFile designPdf, String name);
 
     List<TeaDesign> listDesignIds(String name);
 

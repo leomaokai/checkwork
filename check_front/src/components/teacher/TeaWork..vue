@@ -223,6 +223,11 @@
             label="源代码"
             width="150"
           ></el-table-column>
+          <el-table-column
+            property="isChecked"
+            label=" "
+            width="150"
+          ></el-table-column>
           <el-table-column label="操作" width="90">
             <template slot-scope="scope">
               <el-button @click="downCode(scope.row)" type="text" size="small"
@@ -282,12 +287,12 @@
           <el-table-column
             property="stuWorkFirstName"
             label="源代码一"
-            width="250"
+            width="300"
           ></el-table-column>
           <el-table-column
             property="stuWorkSecondName"
             label="源代码二"
-            width="250"
+            width="300"
           ></el-table-column>
           <el-table-column
             property="workResult"
@@ -669,10 +674,28 @@ export default {
                     flag = true;
                   }
                 });
+                url += "&classIds=" + getClass.id;
               }
-              url += "&classIds=" + getClass.id;
             });
           });
+
+          // this.workClass.forEach((oneClass) => {
+          //   this.createWorkFormModel.workClasses.forEach((selectClass) => {
+          //     if (selectClass === oneClass.className) {
+          //       this.classWorkData.forEach((classWork) => {
+          //         if (
+          //           classWork.classId == oneClass.id &&
+          //           classWork.teaWork.workTitle ==
+          //             this.createWorkFormModel.workTitle
+          //         ) {
+          //           flag = true;
+          //         }
+          //       });
+          //       url += "&classIds=" + oneClass.id;
+          //     }
+          //   });
+          // });
+
           // 存在布置过的作业,询问是否重新布置,不能实现对每个班级的判断,原因在于弹框原理
           if (flag) {
             this.$confirm("存在班级已经布置过该作业了, 是否重新布置?", "提示", {

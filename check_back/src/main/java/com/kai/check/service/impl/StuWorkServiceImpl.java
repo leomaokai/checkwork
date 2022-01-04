@@ -8,21 +8,16 @@ import com.kai.check.mapper.*;
 import com.kai.check.pojo.*;
 import com.kai.check.service.IStuWorkService;
 import com.kai.check.utils.*;
-import com.kai.check.utils.commit.CommitFactory;
 import com.kai.check.utils.commit.CommitUtils;
-import com.kai.check.utils.commit.ICommit;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -60,6 +55,10 @@ public class StuWorkServiceImpl extends ServiceImpl<StuWorkMapper, StuWork> impl
     public RespBean deleteWork(Integer stuWorkId) {
         StuWork stuWork = stuWorkMapper.selectOne(new QueryWrapper<StuWork>().eq("id", stuWorkId));
         stuWork.setIsCommit("未提交");
+        stuWork.setWorkName("未提交");
+        stuWork.setPdfName("未提交");
+        stuWork.setWorkExt("");
+        stuWork.setIsChecked(0);
         if (stuWorkMapper.updateById(stuWork) == 1) {
             return RespBean.success();
         }
@@ -163,59 +162,89 @@ public class StuWorkServiceImpl extends ServiceImpl<StuWorkMapper, StuWork> impl
             }
             workUrl.append(newFilename);
             String workPath = workUrl.toString();
-            if (CommitUtils.commitWorkToFile(workFile, workPath)) {
-                return RespBean.error(RespBeanEnum.COMMIT_ERROR);
-            }
-            // 相同扩展名的作业在作业结果表中生成数据
-            if (!flag) {
-                synchronized (StuWorkServiceImpl.class) {
-                    List<StuWork> stuWorks = stuWorkMapper.selectList(new QueryWrapper<StuWork>().eq("work_id", workId));
-                    if (stuWorks != null || !stuWorks.isEmpty()) {
 
-                        StringBuilder resultPath = new StringBuilder(50);
-                        resultPath.append(result).append("/").append(teaId).append("/").append(workTitle);
-                        for (StuWork work : stuWorks) {
-                            if (!(work.getIsCommit().equals("未提交")) && work.getWorkExt().equals(ext)) {
-                                // 交作业时查重并得到结果 重复率高直接返回失败 否则插入数据库
-                                // 查重并得到结果
-                                Integer currentStuWorkId = stuWork.getId();
-                                WorkResult workResult = new WorkResult();
-                                workResult.setWorkFirstId(currentStuWorkId).setWorkSecondId(work.getId()).setWorkId(workId);
-                                String resourcePath = workDir + "/code";
-                                String checkStr = CheckCode.check(resourcePath, resultPath.toString(), newFilename.toString(), work.getWorkName(), ext);
-                                float check = Float.parseFloat(checkStr);
-                                // 源码中还有中文 上传失败 或 查重结果较大
-                                if (checkStr.equals("-1") || check >= resultMax) {
-                                    File file = new File(resourcePath, newFilename.toString());
-                                    if (file.exists()) {
-                                        file.delete();
+            synchronized (CommitUtils.class) {
+                if (CommitUtils.commitWorkToFile(workFile, workPath)) {
+
+                    if (!flag) {
+                        List<StuWork> stuWorks = stuWorkMapper.selectList(new QueryWrapper<StuWork>().eq("work_id", workId));
+                        if (stuWorks != null || !stuWorks.isEmpty()) {
+
+                            int maxResult = 0;
+                            StringBuilder resultPath = new StringBuilder(50);
+                            resultPath.append(result).append("/").append(teaId).append("/").append(workTitle);
+                            String resourcePath = workDir + "/code";
+                            Integer currentStuWorkId = stuWork.getId();
+
+                            // 先自己查自己,排除中文
+                            if (CheckCode.checkSelfFunction(ext, newFilename, resultPath, resourcePath))
+                                return RespBean.error(RespBeanEnum.COMMIT_ERROR);
+
+                            for (StuWork work : stuWorks) {
+
+                                if (!(work.getIsCommit().equals("未提交")) &&
+                                        work.getWorkExt() != null &&
+                                        work.getWorkExt().equals(ext) &&
+                                        work.getWorkUrl() != null &&
+                                        !work.getWorkUrl().isEmpty()) {
+
+                                    File file1 = new File(workPath);
+                                    File file2 = new File(work.getWorkUrl());
+                                    if (!file1.exists() || !file2.exists()) {
+                                        continue;
                                     }
-                                    if (check >= resultMax) {
-                                        stuWork.setIsChecked(1);
-                                        stuWorkMapper.updateById(stuWork);
+
+                                    // 交作业时查重并得到结果 重复率高直接返回失败 否则插入数据库
+                                    // 查重并得到结果
+
+                                    WorkResult workResult = new WorkResult();
+                                    workResult.setWorkFirstId(currentStuWorkId).setWorkSecondId(work.getId()).setWorkId(workId);
+
+                                    String checkStr = CheckCode.check(resourcePath, resultPath.toString(), newFilename.toString(), work.getWorkName(), ext);
+                                    float check = Float.parseFloat(checkStr);
+                                    // 源码中还有中文 上传失败 或 查重结果较大
+                                    // 2021.11.14 不再限制查重结果,将最高结果保存
+//                                    if (checkStr.equals("-1") || check >= resultMax) {
+                                    if (checkStr.equals("-1")) {
+
+                                        File file = new File(resourcePath, newFilename.toString());
+                                        if (file.exists()) {
+                                            file.delete();
+                                        }
+//                                        if (check >= resultMax) {
+//                                            stuWork.setIsChecked(1);
+//                                            stuWorkMapper.updateById(stuWork);
+//                                        }
+//                                        workResultMapper.deleteStuWorkId(currentStuWorkId);
+                                        return RespBean.error(RespBeanEnum.COMMIT_ERROR);
                                     }
-                                    workResultMapper.deleteStuWorkId(currentStuWorkId);
-                                    return RespBean.error(RespBeanEnum.COMMIT_ERROR);
+
+                                    // 得到最高查重率
+                                    maxResult = Math.max(maxResult, (int) check);
+
+                                    workResult.setWorkResult(checkStr);
+                                    workResultMapper.insert(workResult);
                                 }
-                                workResult.setWorkResult(checkStr);
-                                workResultMapper.insert(workResult);
                             }
+
+                            stuWork.setIsChecked(maxResult);
+                            stuWorkMapper.updateById(stuWork);
                         }
                     }
+
+                    // 相同扩展名的作业在作业结果表中生成数据
+                    if (flag) {
+                        stuWork.setPdfName(newFilename.toString()).setPdfPath(workPath).setIsCommit("按时提交");
+                    } else {
+                        stuWork.setWorkName(newFilename.toString()).setWorkUrl(workPath).setWorkExt(ext).setIsCommit("未提交PDF");
+                    }
+                    if (LocalDateTime.now().isAfter(endTime)) {
+                        stuWork.setIsCommit("超时提交");
+                    }
+                    if (stuWorkMapper.updateById(stuWork) == 1) {
+                        return RespBean.success(RespBeanEnum.COMMIT_SUCCESS);
+                    }
                 }
-            }
-
-
-            if (flag) {
-                stuWork.setPdfName(newFilename.toString()).setPdfPath(workPath).setIsCommit("按时提交");
-            } else {
-                stuWork.setWorkName(newFilename.toString()).setWorkUrl(workPath).setWorkExt(ext).setIsCommit("未提交PDF").setIsChecked(0);
-            }
-            if (LocalDateTime.now().isAfter(endTime)) {
-                stuWork.setIsCommit("超时提交");
-            }
-            if (stuWorkMapper.updateById(stuWork) == 1) {
-                return RespBean.success(RespBeanEnum.COMMIT_SUCCESS);
             }
         }
         return RespBean.error(RespBeanEnum.COMMIT_ERROR);
@@ -232,7 +261,7 @@ public class StuWorkServiceImpl extends ServiceImpl<StuWorkMapper, StuWork> impl
         CheckCode.deleteWorkFileByPath(workUrl);
         String pdfPath = stuWork.getPdfPath();
         CheckCode.deleteWorkFileByPath(pdfPath);
-        stuWork.setWorkName("未提交").setWorkUrl("").setPdfName("未提交").setPdfPath("").setIsCommit("未提交").setWorkExt("").setIsChecked(0);
+        stuWork.setWorkName("未提交").setWorkUrl("").setPdfName("未提交").setPdfPath("").setIsCommit("未提交").setWorkExt("");
         if (stuWorkMapper.updateById(stuWork) == 1) {
             workResultMapper.deleteStuWorkId(stuWorkId);
             return RespBean.success(RespBeanEnum.DELETE_SUCCESS);
@@ -257,5 +286,11 @@ public class StuWorkServiceImpl extends ServiceImpl<StuWorkMapper, StuWork> impl
         DownFileUtil.downFile(url, fileName, response);
     }
 
-
+    @Override
+    public RespBean scoreWork(Integer stuWorkId, Integer score) {
+        if (stuWorkMapper.scoreWork(stuWorkId, score)) {
+            return RespBean.success(RespBeanEnum.SCORE_SUCCESS);
+        }
+        return RespBean.error(RespBeanEnum.SCORE_ERROR);
+    }
 }

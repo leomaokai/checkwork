@@ -153,13 +153,14 @@ export default {
         if (this.isCommitting) {
           res.data.forEach((one) => {
             if (one.id == this.commitStuWorkData.stuWorkId) {
-              if (one.isChecked == 1) {
-                this.$message({
-                  type: "error",
-                  message:
-                    "提交失败，与已提交的作业重复率过高，请修改作业后重新提交！！！",
-                });
-              } else if (one.workName == "未提交") {
+              // if (one.isChecked == 1) {
+              // this.$message({
+              // type: "error",
+              // message:
+              // "提交失败，作业重复率过高，请修改作业后重新提交！！！",
+              //  });
+              // }
+              if (one.workName == "未提交") {
                 this.$message({
                   type: "error",
                   message:

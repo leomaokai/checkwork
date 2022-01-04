@@ -1,5 +1,6 @@
 <template>
-  <div class="back">
+  <div>
+    <div class="back"></div>
     <el-form
       :rules="rulesLogin"
       ref="loginForm"
@@ -86,8 +87,8 @@ export default {
         if (valid) {
           let loginData = {
             username: this.loginForm.username,
-            // password: Encrypt(this.loginForm.password),
-            password: this.loginForm.password,
+            password: Encrypt(this.loginForm.password),
+            // password: this.loginForm.password,
             code: this.loginForm.code,
           };
           this.loginForm.password = "";
@@ -156,20 +157,25 @@ export default {
 </script>
 <style>
 .back {
-  background: url("../../public/cumt.jpg");
-  background-repeat: no-repeat;
-  background-size: 100% auto;
+  background-image: linear-gradient(to right, #92fe9d 0%, #00c9ff 100%);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
 }
 .loginContainer {
   border-radius: 15px;
-  background-clip: padding-box;
+  /* background-clip: padding-box; */
   margin: 0 auto;
-  margin-top: 13%;
   width: 350px;
   padding: 15px 35px 15px 35px;
-  background: white;
+  background-image: linear-gradient(to top, #dfe9f3 0%, white 100%);
+  /* background: white; */
   border: 1px solid grey;
   box-shadow: 0 0 25px #cac6c6;
+
+  position: relative;
+  top: 180px;
 }
 .loginTitle {
   margin: 10px auto 25px auto;

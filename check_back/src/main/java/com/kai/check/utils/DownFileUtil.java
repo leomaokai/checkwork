@@ -11,7 +11,7 @@ import java.net.URLEncoder;
 
 public class DownFileUtil {
 
-    public static void downFile(String fileUrl, String fileName, HttpServletResponse response) {
+    public static synchronized void downFile(String fileUrl, String fileName, HttpServletResponse response) {
         if (fileUrl == null || fileUrl.equals("")) {
             try {
                 response.setHeader("content-disposition", "attachment" + ";filename=" + URLEncoder.encode("", "UTF-8"));

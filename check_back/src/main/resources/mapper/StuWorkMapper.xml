@@ -32,6 +32,14 @@
         id
         , work_id, class_id,work_name, stu_id, work_url, work_ext,pdf_name,pdf_path, is_commit, is_checked, tea_score,tea_opinion,create_time, update_time
     </sql>
+
+    <update id="scoreWork">
+        UPDATE
+            t_stu_work
+        SET tea_score = #{score}
+        WHERE id = #{stuWorkId}
+    </update>
+
     <delete id="deleteByStuId">
         DELETE
         FROM t_stu_work

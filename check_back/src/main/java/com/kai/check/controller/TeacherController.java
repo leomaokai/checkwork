@@ -158,6 +158,16 @@ public class TeacherController {
         return teaWorkService.createWorkTitle(workTitle, name);
     }
 
+//    @ApiOperation(value = "创建作业2(标题,一个具体的PDF文件)")
+//    @PostMapping("/createDesign")
+//    public RespBean createWorkNew(@RequestParam("createWorkPdf") MultipartFile createWorkPdf, @RequestParam("createWorkTitle") String createWorkTitle, Principal principal) {
+//        if (createWorkTitle.isEmpty()) {
+//            return RespBean.error(RespBeanEnum.INSERT_ERROR);
+//        }
+//        String name = principal.getName();
+//        return teaWorkService.createWorkNew(createWorkTitle, createWorkPdf, name);
+//    }
+
     @ApiOperation(value = "新查询作业标题")
     @GetMapping("/listWorkTitles")
     public List<TeaWork> listWorkTitles(Principal principal) {
@@ -231,6 +241,12 @@ public class TeacherController {
         stuWorkService.downloadWork(stuWorkId, flag, response);
     }
 
+    @ApiOperation(value = "作业评分")
+    @PostMapping(value = "/scoreWork")
+    public RespBean scoreWork(Integer stuWorkId,Integer score){
+        return stuWorkService.scoreWork(stuWorkId,score);
+    }
+
 
 //    @ApiOperation(value = "新布置课程设计(传标题,描述,截止日期)")
 //    @PostMapping("/disposeDesign")
@@ -253,12 +269,12 @@ public class TeacherController {
 
     @ApiOperation(value = "新创建课程设计(标题,一个具体的PDF文件)")
     @PostMapping("/createDesign")
-    public RespBean createDesign(@RequestParam("designPdf") MultipartFile designPdf, @RequestParam("designTitle") String designTitle, Principal principal) {
+    public RespBean createDesign(@RequestParam("designPdf") MultipartFile designPdf, @RequestParam("designTitle") String designTitle, @RequestParam("designLimit") Integer designLimit, Principal principal) {
         if (designTitle.isEmpty()) {
             return RespBean.error(RespBeanEnum.INSERT_ERROR);
         }
         String name = principal.getName();
-        return teaDesignService.createDesign(designTitle, designPdf, name);
+        return teaDesignService.createDesign(designTitle, designLimit, designPdf, name);
     }
 
     @ApiOperation(value = "查询课程设计")
@@ -315,6 +331,18 @@ public class TeacherController {
     @DeleteMapping("/deleteTheDesign/{designId}")
     public RespBean deleteTheDesign(@PathVariable("designId") Integer designId){
         return teaDesignService.deleteDesignByDesignId(designId);
+    }
+
+
+    // 1 下载源代码, 2 下载pdf,
+    @ApiOperation(value = "下载作业课程设计")
+    @GetMapping(value = "/downloadDesign", produces = "application/octet-stream")
+    public void downloadDesign(Integer groupDesignId, Integer flag, HttpServletResponse response) {
+        if (groupDesignId == null || flag == null) {
+            // return RespBean.error(RespBeanEnum.DOWN_ERROR);
+            return;
+        }
+        stuDesignService.downloadDesign(groupDesignId, flag, response);
     }
 
 

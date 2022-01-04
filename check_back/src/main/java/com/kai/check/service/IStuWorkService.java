@@ -31,4 +31,5 @@ public interface IStuWorkService extends IService<StuWork> {
 
     void downloadWork(Integer stuWorkId, Integer flag, HttpServletResponse response);
 
+    RespBean scoreWork(Integer stuWorkId, Integer score);
 }

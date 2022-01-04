@@ -10,7 +10,7 @@
         >
           <el-form-item label="课程设计" prop="designId">
             <el-select
-              v-model="selectDesignModel.designId"
+              v-model="selectDesignModel.design"
               clearable
               placeholder="请选择课程设计"
             >
@@ -18,7 +18,7 @@
                 v-for="item in designOptions"
                 :key="item.teaDesign.id"
                 :label="item.teaDesign.designTitle"
-                :value="item.teaDesign.id"
+                :value="[item.teaDesign.id, item.teaDesign.designLimit]"
               >
                 <span style="float: left">{{
                   item.teaDesign.designTitle
@@ -30,6 +30,9 @@
                   size="mini"
                   @click="downDesignPdf(item.teaDesign.id)"
                 ></el-button>
+                <span style="float: right">{{
+                  item.teaDesign.designLimit
+                }}</span>
               </el-option>
             </el-select>
           </el-form-item>
@@ -37,7 +40,7 @@
             <el-select
               v-model="selectDesignModel.studentIds"
               multiple
-              :multiple-limit="3"
+              :multiple-limit="selectDesignModel.design[1] - 1"
               placeholder="请选择组员"
             >
               <el-option
@@ -75,6 +78,9 @@
         </el-form-item>
         <el-form-item label="设计名称">
           <el-input v-model="groupDesignInfo.designTitle" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="截止日期">
+          <el-input v-model="endTime" disabled></el-input>
         </el-form-item>
         <el-form-item label="源代码">
           <el-input v-model="groupDesignInfo.codeName" disabled></el-input>
@@ -160,6 +166,7 @@ export default {
   name: "StuDesign",
   data() {
     return {
+      endTime: "2022-01-09 00:00:00",
       // 提交设计(与提交作业代码类似)
       commitGroupDesignUrl: "",
       commitGroupDesignDisabled: false,
@@ -186,18 +193,20 @@ export default {
       selectDesignModel: {
         designId: "",
         studentIds: [],
+        design: [],
       },
       selectDesignRules: {
-        designId: [
-          {
-            required: true,
-            message: "请选择你要完成的课程设计",
-            trigger: "change",
-          },
-        ],
+        // designId: [
+        //   {
+        //     required: true,
+        //     message: "请选择你要完成的课程设计",
+        //     trigger: "change",
+        //   },
+        // ],
         studentIds: [
           { required: false, message: "请选择组员", trigger: "change" },
         ],
+        design: [{ required: true }],
       },
     };
   },
@@ -248,7 +257,8 @@ export default {
             .then(() => {
               this.commitGroupDesignUrl = "/student/uploadStuDesignPDF";
               this.commitGroupDesignVisible = true;
-              this.commitGroupDesignData.groupDesignId = this.groupDesignInfo.id;
+              this.commitGroupDesignData.groupDesignId =
+                this.groupDesignInfo.id;
               this.isCommittingPdf = true;
             })
             .catch(() => {
@@ -307,13 +317,7 @@ export default {
           this.selectDesignVisible = true;
         }
         if (this.isCommitting) {
-          if (res.isChecked == 1) {
-            this.$message({
-              type: "error",
-              message:
-                "提交失败，与已提交的作业重复率过高，请修改作业后重新提交！！！",
-            });
-          } else if (res.codeName == "未提交") {
+          if (res.codeName == "未提交") {
             this.$message({
               type: "error",
               message:
@@ -351,9 +355,9 @@ export default {
         type: "warning",
       })
         .then(() => {
-          this.$download(
-            "/student/downDesignPdf/" + designId
-          ).then((res) => {});
+          this.$download("/student/downDesignPdf/" + designId).then(
+            (res) => {}
+          );
         })
         .catch(() => {
           this.$message({
@@ -365,11 +369,18 @@ export default {
     submitSelectDesigntForm(selectDesignModel) {
       this.$refs[selectDesignModel].validate((valid) => {
         if (valid) {
-          let url = "?designId=" + this.selectDesignModel.designId;
+          let url = "?designId=" + this.selectDesignModel.design[0];
           this.selectDesignModel.studentIds.forEach((studentId) => {
             url += "&studentIds=" + studentId;
           });
-          this.$post("/student/createGroup" + url);
+          if (this.selectDesignModel.studentIds.length == 0) {
+            url += "&studentIds=" + [];
+          }
+          this.$post("/student/createGroup" + url).then((res) => {
+            this.selectDesignVisible = false;
+            this.initGroupDesign();
+            this.initGroupMembers();
+          });
         } else {
           console.log("error submit!!");
           return false;

@@ -2,7 +2,9 @@
   <div>
     <el-container>
       <el-header class="homeHeader">
-        <div class="title">CUMT作业管理系统</div>
+        <div class="title">
+          <img src="../assets/header.png" alt="#" />
+        </div>
         <el-dropdown @command="userCommand">
           <span class="el-dropdown-link">
             {{ username }}<i class="el-icon-arrow-down el-icon--right"></i>
@@ -136,10 +138,10 @@ export default {
       this.$refs[changePwdModel].validate((valid) => {
         if (valid) {
           let updatePwd = {
-            // oldPassword:  Encrypt(this.changePwdModel.oldPassword),
-            // newPassword:  Encrypt(this.changePwdModel.newPassword),
-            oldPassword: this.changePwdModel.oldPassword,
-            newPassword: this.changePwdModel.newPassword,
+            oldPassword: Encrypt(this.changePwdModel.oldPassword),
+            newPassword: Encrypt(this.changePwdModel.newPassword),
+            // oldPassword: this.changePwdModel.oldPassword,
+            // newPassword: this.changePwdModel.newPassword,
           };
           this.$put("/user/update", updatePwd).then((res) => {
             if (res != undefined && res.code == 200202) {
@@ -169,17 +171,26 @@ export default {
 
 <style scoped>
 .homeHeader {
-  background: #409eff;
+  background-image: linear-gradient(
+    to right,
+    #eea2a2 0%,
+    #bbc1bf 19%,
+    #57c6e1 42%,
+    #b49fda 79%,
+    #7ac5d8 100%
+  );
+  /* background: #409eff; */
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 15px;
   box-sizing: border-box;
 }
-.title {
-  font-size: 30px;
-  color: white;
-  font-family: 楷体;
+.title img {
+  height: 50px;
+  position: relative;
+  left: -10px;
+  top: 3px;
 }
 .el-dropdown-link {
   cursor: pointer;

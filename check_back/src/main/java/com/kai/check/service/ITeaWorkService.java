@@ -3,6 +3,7 @@ package com.kai.check.service;
 import com.kai.check.pojo.TeaWork;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.kai.check.utils.RespBean;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,4 +22,5 @@ public interface ITeaWorkService extends IService<TeaWork> {
 
     List<TeaWork> listWorkTitles(String name);
 
+    RespBean createWorkNew(String createWorkTitle, MultipartFile createWorkPdf, String name);
 }

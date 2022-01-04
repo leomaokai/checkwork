@@ -1,0 +1,649 @@
+/*
+SQLyog Ultimate v12.5.1 (64 bit)
+MySQL - 8.0.23 : Database - check_data
+*********************************************************************
+*/
+
+/*!40101 SET NAMES utf8 */;
+
+/*!40101 SET SQL_MODE=''*/;
+
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`check_data` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+USE `check_data`;
+
+/*Table structure for table `t_class_design` */
+
+DROP TABLE IF EXISTS `t_class_design`;
+
+CREATE TABLE `t_class_design` (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `class_id` int DEFAULT NULL COMMENT '班级id',
+  `design_id` int DEFAULT NULL COMMENT '设计id',
+  `tea_id` varchar(50) DEFAULT NULL COMMENT '教师id',
+  `end_time` datetime DEFAULT NULL COMMENT '截止时间',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `t_class_design` */
+
+/*Table structure for table `t_class_tea` */
+
+DROP TABLE IF EXISTS `t_class_tea`;
+
+CREATE TABLE `t_class_tea` (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT '班级id',
+  `class_name` varchar(100) DEFAULT NULL COMMENT '班级名',
+  `tea_id` varchar(50) DEFAULT NULL COMMENT '老师id',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `tea_id` (`tea_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `t_class_tea` */
+
+insert  into `t_class_tea`(`id`,`class_name`,`tea_id`,`create_time`,`update_time`) values 
+(20,'电子信息2019-4班','00005459','2021-10-26 16:04:40','2021-10-26 16:04:40'),
+(21,'电子信息2019-5班','00005459','2021-10-26 16:04:56','2021-10-26 16:04:56'),
+(22,'电子信息2019-6班','00005459','2021-10-26 16:05:12','2021-10-26 16:05:12');
+
+/*Table structure for table `t_class_work` */
+
+DROP TABLE IF EXISTS `t_class_work`;
+
+CREATE TABLE `t_class_work` (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `class_id` int DEFAULT NULL COMMENT '班级id',
+  `work_id` int DEFAULT NULL COMMENT '作业id',
+  `tea_id` varchar(50) DEFAULT NULL COMMENT '老师id',
+  `end_time` datetime DEFAULT NULL COMMENT '该班级作业截止日期',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `class_id` (`class_id`),
+  KEY `tea_id` (`tea_id`),
+  KEY `work_id` (`work_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=143 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `t_class_work` */
+
+insert  into `t_class_work`(`id`,`class_id`,`work_id`,`tea_id`,`end_time`,`create_time`,`update_time`) values 
+(140,20,29,'00005459','2021-11-04 00:00:00','2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(141,21,29,'00005459','2021-11-04 00:00:00','2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(142,22,29,'00005459','2021-11-04 00:00:00','2021-10-29 09:50:03','2021-10-29 09:50:03');
+
+/*Table structure for table `t_design_result` */
+
+DROP TABLE IF EXISTS `t_design_result`;
+
+CREATE TABLE `t_design_result` (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `design_id` int DEFAULT NULL COMMENT '设计id',
+  `design_first_id` int DEFAULT NULL COMMENT '设计1id',
+  `design_second_id` int DEFAULT NULL COMMENT '设计2id',
+  `work_result` varchar(10) DEFAULT NULL COMMENT '重复率',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `t_design_result` */
+
+/*Table structure for table `t_menus` */
+
+DROP TABLE IF EXISTS `t_menus`;
+
+CREATE TABLE `t_menus` (
+  `menu_id` int NOT NULL AUTO_INCREMENT COMMENT '菜单id',
+  `menu_rid` int DEFAULT NULL COMMENT '角色id',
+  `menu_url` varchar(64) DEFAULT NULL COMMENT '菜单url',
+  `menu_path` varchar(64) DEFAULT NULL COMMENT '菜单路径',
+  `menu_name` varchar(64) DEFAULT NULL COMMENT '菜单名字',
+  `menu_component` varchar(64) DEFAULT NULL COMMENT '菜单组件',
+  `menu_pid` int DEFAULT NULL COMMENT '父id',
+  PRIMARY KEY (`menu_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `t_menus` */
+
+insert  into `t_menus`(`menu_id`,`menu_rid`,`menu_url`,`menu_path`,`menu_name`,`menu_component`,`menu_pid`) values 
+(1,1,'/admin','/admin','管理员菜单','AdminHome',0),
+(2,2,'/teacher','/teacher','教师菜单','TeacherHome',0),
+(3,3,'/student','/student','学生菜单','StudentHome',0),
+(4,1,'/admin/user','/admin','用户管理','AdminUser',1),
+(6,2,'/teacher/class','/teacher','班级管理','TeacherClass',2),
+(7,2,'/teacher/work','/teacher','作业管理','TeacherWork',2),
+(8,3,'/student/work','/student','作业查询','StudentWork',3),
+(9,3,'/student/design','/student','课程设计','StudentDesign',3),
+(10,2,'/teacher/design','/teacher','课程设计管理','TeacherDesign',2),
+(11,3,'/student/info','/student','个人信息','StudentInfo',3);
+
+/*Table structure for table `t_role_url` */
+
+DROP TABLE IF EXISTS `t_role_url`;
+
+CREATE TABLE `t_role_url` (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `role_name` enum('管理员','教师','学生') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '角色',
+  `role_url` varchar(100) DEFAULT NULL COMMENT 'url',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `t_role_url` */
+
+insert  into `t_role_url`(`id`,`role_name`,`role_url`) values 
+(1,'管理员','/admin/**'),
+(2,'教师','/teacher/**'),
+(3,'学生','/student/**');
+
+/*Table structure for table `t_stu_design` */
+
+DROP TABLE IF EXISTS `t_stu_design`;
+
+CREATE TABLE `t_stu_design` (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `group_id` int DEFAULT NULL COMMENT '组id',
+  `design_id` int DEFAULT NULL COMMENT '设计id',
+  `code_name` varchar(200) DEFAULT '未提交' COMMENT '源代码作业名',
+  `code_path` varchar(255) DEFAULT NULL COMMENT '源代码保存路径',
+  `code_ext` varchar(20) DEFAULT NULL COMMENT '源代码类型',
+  `pdf_name` varchar(200) DEFAULT '未提交' COMMENT 'pdf名',
+  `pdf_path` varchar(255) DEFAULT NULL COMMENT 'pdf保存路径',
+  `is_commit` varchar(20) DEFAULT '未提交' COMMENT '未提交,已提交,超时提交',
+  `is_checked` int DEFAULT NULL COMMENT '0正常,1查重过高',
+  `tea_score` int DEFAULT NULL COMMENT '得分',
+  `tea_opinion` varchar(100) DEFAULT NULL COMMENT '点评',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `t_stu_design` */
+
+/*Table structure for table `t_stu_group` */
+
+DROP TABLE IF EXISTS `t_stu_group`;
+
+CREATE TABLE `t_stu_group` (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `design_id` int DEFAULT NULL COMMENT '设计id',
+  `class_id` int DEFAULT NULL COMMENT '班级id',
+  `stu_id1` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '组员1',
+  `stu_id2` varchar(50) DEFAULT NULL COMMENT '组员2',
+  `stu_id3` varchar(50) DEFAULT NULL COMMENT '组员3',
+  `stu_id4` varchar(50) DEFAULT NULL COMMENT '组员4',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `t_stu_group` */
+
+/*Table structure for table `t_stu_work` */
+
+DROP TABLE IF EXISTS `t_stu_work`;
+
+CREATE TABLE `t_stu_work` (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `work_id` int DEFAULT NULL COMMENT '作业id',
+  `class_id` int DEFAULT NULL COMMENT '班级id',
+  `stu_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '学生id',
+  `work_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '未提交' COMMENT '源代码作业名',
+  `work_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '作业url',
+  `work_ext` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '作业类型',
+  `pdf_name` varchar(200) DEFAULT '未提交' COMMENT '作业PDF名',
+  `pdf_path` varchar(255) DEFAULT NULL COMMENT 'pdf作业路径',
+  `is_commit` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '未提交' COMMENT '未提交,已提交,超时提交',
+  `is_checked` int DEFAULT '0' COMMENT '0正常,1查重过高',
+  `tea_score` int DEFAULT '-1' COMMENT '得分',
+  `tea_opinion` varchar(100) DEFAULT NULL COMMENT '点评',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `work_id` (`work_id`),
+  KEY `class_id` (`class_id`),
+  KEY `stu_id` (`stu_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=679 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `t_stu_work` */
+
+insert  into `t_stu_work`(`id`,`work_id`,`class_id`,`stu_id`,`work_name`,`work_url`,`work_ext`,`pdf_name`,`pdf_path`,`is_commit`,`is_checked`,`tea_score`,`tea_opinion`,`create_time`,`update_time`) values 
+(574,29,20,'03191135','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(575,29,20,'04171233','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(576,29,20,'04171435','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(577,29,20,'04191150','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(578,29,20,'04191153','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(579,29,20,'04191154','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(580,29,20,'04191170','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(581,29,20,'04191185','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(582,29,20,'04191186','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(583,29,20,'04191207','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(584,29,20,'04191215','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(585,29,20,'04191247','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(586,29,20,'04191251','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(587,29,20,'04191262','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(588,29,20,'04191263','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(589,29,20,'04191273','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(590,29,20,'04191310','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(591,29,20,'04191336','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(592,29,20,'04191357','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(593,29,20,'04191389','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(594,29,20,'04191409','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(595,29,20,'04191419','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(596,29,20,'04191429','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(597,29,20,'04191430','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(598,29,20,'04191433','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(599,29,20,'04191435','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(600,29,20,'04191436','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(601,29,20,'04191449','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(602,29,20,'04191466','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(603,29,20,'04191512','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(604,29,20,'04191534','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(605,29,20,'06192124','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(606,29,21,'02190680','电子信息2019-5班-02190680-张飞扬.cpp','/check_resource/00005459/第2章作业/code/电子信息2019-5班-02190680-张飞扬.cpp','cpp','电子信息2019-5班-02190680-张飞扬.pdf','/check_resource/00005459/第2章作业/pdf/电子信息2019-5班-02190680-张飞扬.pdf','按时提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 23:35:19'),
+(607,29,21,'04191155','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(608,29,21,'04191158','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(609,29,21,'04191160','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(610,29,21,'04191190','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(611,29,21,'04191193','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(612,29,21,'04191195','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(613,29,21,'04191198','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(614,29,21,'04191216','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(615,29,21,'04191230','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(616,29,21,'04191232','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(617,29,21,'04191233','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(618,29,21,'04191235','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(619,29,21,'04191244','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(620,29,21,'04191246','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(621,29,21,'04191253','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(622,29,21,'04191254','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(623,29,21,'04191306','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(624,29,21,'04191315','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(625,29,21,'04191332','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(626,29,21,'04191362','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(627,29,21,'04191368','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(628,29,21,'04191402','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(629,29,21,'04191418','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(630,29,21,'04191426','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(631,29,21,'04191450','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(632,29,21,'04191459','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(633,29,21,'04191460','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(634,29,21,'04191461','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(635,29,21,'04191514','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(636,29,21,'05191617','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(637,29,21,'06192206','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(638,29,21,'09193322','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(639,29,21,'14194471','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(640,29,22,'03190862','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(641,29,22,'04161341','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(642,29,22,'04171149','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(643,29,22,'04171447','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(644,29,22,'04181205','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(645,29,22,'04181312','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(646,29,22,'04181485','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(647,29,22,'04191183','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(648,29,22,'04191194','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(649,29,22,'04191221','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(650,29,22,'04191238','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(651,29,22,'04191255','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(652,29,22,'04191260','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(653,29,22,'04191272','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(654,29,22,'04191278','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(655,29,22,'04191280','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(656,29,22,'04191299','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(657,29,22,'04191302','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(658,29,22,'04191322','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(659,29,22,'04191324','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(660,29,22,'04191343','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(661,29,22,'04191345','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(662,29,22,'04191360','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(663,29,22,'04191371','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(664,29,22,'04191373','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(665,29,22,'04191383','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(666,29,22,'04191387','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(667,29,22,'04191391','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(668,29,22,'04191394','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(669,29,22,'04191405','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(670,29,22,'04191465','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(671,29,22,'04191486','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(672,29,22,'04191510','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(673,29,22,'04191515','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(674,29,22,'04191538','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(675,29,22,'04191540','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(676,29,22,'14194469','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(677,29,22,'17195164','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03'),
+(678,29,22,'17195273','未提交',NULL,NULL,'未提交',NULL,'未提交',0,-1,NULL,'2021-10-29 09:50:03','2021-10-29 09:50:03');
+
+/*Table structure for table `t_student` */
+
+DROP TABLE IF EXISTS `t_student`;
+
+CREATE TABLE `t_student` (
+  `stu_id` varchar(50) NOT NULL COMMENT '学生id',
+  `stu_name` varchar(50) DEFAULT NULL COMMENT '学生姓名',
+  `stu_phone` char(11) DEFAULT NULL COMMENT '学生手机',
+  `stu_qq` varchar(100) DEFAULT NULL COMMENT '学生qq',
+  `stu_mail` varchar(100) DEFAULT NULL COMMENT '学生邮箱',
+  `stu_class_id` int DEFAULT NULL COMMENT '班级',
+  `is_group` int DEFAULT '0' COMMENT '0未组队,1组队',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`stu_id`),
+  KEY `class_id` (`stu_class_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `t_student` */
+
+insert  into `t_student`(`stu_id`,`stu_name`,`stu_phone`,`stu_qq`,`stu_mail`,`stu_class_id`,`is_group`,`create_time`,`update_time`) values 
+('02190680','张飞扬','19816252513','1144988194',NULL,21,0,'2021-10-26 16:57:53','2021-10-29 17:04:21'),
+('03190862','孙文泽','13092323233','1030788738',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 22:13:36'),
+('03191135',NULL,NULL,NULL,NULL,20,0,'2021-10-26 16:44:01','2021-10-26 16:44:01'),
+('04161341',NULL,NULL,NULL,NULL,22,0,'2021-10-26 18:22:18','2021-10-26 18:22:18'),
+('04171149','赵晓宇','15150029636','869259663',NULL,22,0,'2021-10-26 18:22:18','2021-10-29 10:49:15'),
+('04171233','曹云鹏','19899831752','1940068767',NULL,20,0,'2021-10-26 16:51:54','2021-10-30 08:46:13'),
+('04171435','王子琦','18899612794','354067469',NULL,20,0,'2021-10-26 16:51:54','2021-10-30 12:48:35'),
+('04171447','陈函希','15605201923','2224263972',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 12:06:30'),
+('04181205','傅琳雅','18329034547','458861620',NULL,22,0,'2021-10-26 18:22:18','2021-10-30 10:01:45'),
+('04181312',NULL,NULL,NULL,NULL,22,0,'2021-10-26 18:22:18','2021-10-26 18:22:18'),
+('04181485','苏振华','19851623132','3320165738',NULL,22,0,'2021-10-26 18:22:18','2021-10-29 12:12:12'),
+('04191150','朱小玉','13195575700','2849303552',NULL,20,0,'2021-10-26 16:51:54','2021-10-30 08:29:08'),
+('04191153','刘禹杉','19816258613','953053134',NULL,20,0,'2021-10-26 16:51:54','2021-10-30 12:49:00'),
+('04191154','李祎婧','15529231082','2364640582',NULL,20,0,'2021-10-26 16:51:54','2021-10-29 12:31:36'),
+('04191155','朱志文','19852128528','1413721116',NULL,21,0,'2021-10-26 16:57:53','2021-10-29 16:09:56'),
+('04191158',NULL,'18105010811','362713347',NULL,21,0,'2021-10-26 16:57:53','2021-10-29 22:35:57'),
+('04191160','胥俊怀','13145218336','2450351634',NULL,21,0,'2021-10-26 16:57:53','2021-10-29 15:59:39'),
+('04191170',NULL,NULL,NULL,NULL,20,0,'2021-10-26 16:51:54','2021-10-26 16:51:54'),
+('04191183',NULL,NULL,NULL,NULL,22,0,'2021-10-26 18:20:29','2021-10-26 18:20:29'),
+('04191185','樊珊沛玲','18651351912','1344559470',NULL,20,0,'2021-10-26 16:51:54','2021-10-30 11:15:41'),
+('04191186','王帆','13013972618','2847549299',NULL,20,0,'2021-10-26 16:51:54','2021-10-29 09:55:49'),
+('04191190','李俊良','13063533969','2387937249',NULL,21,0,'2021-10-26 16:57:53','2021-10-29 12:10:56'),
+('04191193','周小凇','13013976779','2914927281@qq.com',NULL,21,0,'2021-10-26 16:57:53','2021-10-29 20:04:16'),
+('04191194','乔宇','15052281001','1668597080',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 11:27:46'),
+('04191195',NULL,NULL,NULL,NULL,21,0,'2021-10-26 16:57:53','2021-10-26 16:57:53'),
+('04191198','耿培先','15505190863','2496680847',NULL,21,0,'2021-10-26 16:57:53','2021-10-29 10:20:57'),
+('04191207','黄俊森','13276596357','2298203336',NULL,20,0,'2021-10-26 16:51:55','2021-10-29 10:08:28'),
+('04191215','王彤彤','15076252012','2629284953',NULL,20,0,'2021-10-26 16:51:55','2021-10-29 10:01:09'),
+('04191216','赵春媛','18369719573','8851512770',NULL,21,0,'2021-10-26 16:57:53','2021-10-29 09:59:56'),
+('04191221','张锦鹏','19852094411','1740402781',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 11:33:34'),
+('04191230','高天宇','18919604709','1148697611',NULL,21,0,'2021-10-26 16:57:53','2021-10-29 10:09:52'),
+('04191232','陈梓恺','19816256682','452152006',NULL,21,0,'2021-10-26 16:57:53','2021-10-29 10:42:52'),
+('04191233','肖家杨','19937219907','2807175506',NULL,21,0,'2021-10-26 16:57:53','2021-10-29 10:16:36'),
+('04191235',NULL,NULL,NULL,NULL,21,0,'2021-10-26 16:57:53','2021-10-26 16:57:53'),
+('04191238',NULL,NULL,NULL,NULL,22,0,'2021-10-26 18:20:29','2021-10-26 18:20:29'),
+('04191244','张菁华','18348098615','403280027',NULL,21,0,'2021-10-26 16:57:53','2021-10-29 19:21:08'),
+('04191246',NULL,NULL,NULL,NULL,21,0,'2021-10-26 16:57:53','2021-10-26 16:57:53'),
+('04191247',NULL,NULL,NULL,NULL,20,0,'2021-10-26 16:51:55','2021-10-26 16:51:55'),
+('04191251','魏代宇辰','19852127658','1964784045',NULL,20,0,'2021-10-26 16:51:55','2021-10-29 10:06:10'),
+('04191253','姜筱巍','19852128155','1219159508',NULL,21,0,'2021-10-26 16:57:53','2021-10-29 09:56:52'),
+('04191254','卓厚贤','18952161528','2782507583',NULL,21,0,'2021-10-26 16:57:53','2021-10-30 15:02:24'),
+('04191255','陈宇龙','13056346125','1378343712',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 09:59:20'),
+('04191260','杨德业','19951601856','1697400092',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 11:07:12'),
+('04191262','石硕洋',NULL,NULL,NULL,20,0,'2021-10-26 16:51:55','2021-10-30 00:21:56'),
+('04191263','史赛赛','13056296116','2936008103',NULL,20,0,'2021-10-26 16:51:55','2021-10-30 11:59:21'),
+('04191272','张芝铭','13160289630','2116379685',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 10:03:03'),
+('04191273','胡宇霄','19852127218','1779750111',NULL,20,0,'2021-10-26 16:51:55','2021-10-29 10:12:25'),
+('04191278','朱麒润','15817339692','1099282558',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 09:58:03'),
+('04191280','赵亚东','18088912998','1406279052',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 10:04:04'),
+('04191299','陈闯康','19852127807','2873923524',NULL,22,0,'2021-10-26 18:20:29','2021-10-30 09:26:13'),
+('04191302','李双双',NULL,NULL,NULL,22,0,'2021-10-26 18:20:29','2021-10-29 12:50:38'),
+('04191306','毕凯悦','13869066187','1360604952',NULL,21,0,'2021-10-26 16:57:53','2021-10-29 09:57:58'),
+('04191310','吴世佳','15170573278','1935661175',NULL,20,0,'2021-10-26 16:51:55','2021-10-29 22:04:18'),
+('04191315','杨振一','17313630614','1090912934',NULL,21,0,'2021-10-26 16:57:53','2021-10-29 23:27:56'),
+('04191322',NULL,NULL,NULL,NULL,22,0,'2021-10-26 18:20:29','2021-10-26 18:20:29'),
+('04191324','张育玮','13270337955','526493237',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 09:58:04'),
+('04191332','张筱涵','13771219906','734276123',NULL,21,0,'2021-10-26 16:57:54','2021-10-29 10:02:53'),
+('04191336','禚佳轩','19811783788','1653426803',NULL,20,0,'2021-10-26 16:51:55','2021-10-29 13:52:24'),
+('04191343','米昱霖','13013977287','1069748452',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 22:07:04'),
+('04191345','何源潮','19852127095','2453795089',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 10:21:09'),
+('04191357','董世鹏','19852126721','3345852153',NULL,20,0,'2021-10-26 16:51:55','2021-10-29 09:57:48'),
+('04191360',NULL,NULL,NULL,NULL,22,0,'2021-10-26 18:20:29','2021-10-26 18:20:29'),
+('04191362','黄晓凌','',NULL,NULL,21,0,'2021-10-26 16:57:54','2021-10-31 10:21:49'),
+('04191368','张益博','','1106445760',NULL,21,0,'2021-10-26 16:57:54','2021-10-29 18:56:30'),
+('04191371','张才铭','13026239923','494529681',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 10:02:10'),
+('04191373','庄浩南','13013983883','2414625329',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 22:16:16'),
+('04191383','赫战鑫','16696921665','2598376232',NULL,22,0,'2021-10-26 18:22:18','2021-10-29 09:57:16'),
+('04191387','孙伟航','13697600986','1317508290',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 19:53:32'),
+('04191389',NULL,NULL,NULL,NULL,20,0,'2021-10-26 16:51:55','2021-10-26 16:51:55'),
+('04191391','陈璐','15257927632','1084270044',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 13:15:46'),
+('04191394','武文轩','19816255617','2261836770',NULL,22,0,'2021-10-26 18:20:29','2021-10-30 11:39:42'),
+('04191402',NULL,NULL,NULL,NULL,21,0,'2021-10-26 16:57:54','2021-10-26 16:57:54'),
+('04191405','郭蔚然','13903407721','425685356',NULL,22,0,'2021-10-26 18:20:29','2021-10-31 08:44:32'),
+('04191409','骆毅','19816251273','596983504',NULL,20,0,'2021-10-26 16:51:55','2021-10-30 01:53:31'),
+('04191418','徐祗凯','19816253072','1593064956',NULL,21,0,'2021-10-26 16:57:54','2021-10-29 10:10:21'),
+('04191419','谭枞','13574069920','750128253',NULL,20,0,'2021-10-26 16:51:55','2021-10-29 10:32:05'),
+('04191426','袁佳惠','19852126986','1315258191',NULL,21,0,'2021-10-26 16:57:54','2021-10-30 13:05:28'),
+('04191429','汤宇涵','18723809927','944763694',NULL,20,0,'2021-10-26 16:51:55','2021-10-29 10:00:16'),
+('04191430','陈可林','19852128150','1151715532',NULL,20,0,'2021-10-26 16:51:55','2021-10-29 10:00:22'),
+('04191433',NULL,NULL,NULL,NULL,20,0,'2021-10-26 16:51:55','2021-10-26 16:51:55'),
+('04191435',NULL,NULL,NULL,NULL,20,0,'2021-10-26 16:51:55','2021-10-26 16:51:55'),
+('04191436','陈耀栋',NULL,NULL,NULL,20,0,'2021-10-26 16:51:55','2021-10-29 09:57:51'),
+('04191449','彭昊','15505152977','2385365770',NULL,20,0,'2021-10-26 16:51:55','2021-10-29 10:00:05'),
+('04191450','唐新宇','18174672708','1603594533',NULL,21,0,'2021-10-26 16:57:54','2021-10-31 13:09:55'),
+('04191459','周巳喆','15823976017','3608424074',NULL,21,0,'2021-10-26 16:57:54','2021-10-30 10:41:21'),
+('04191460','王庆红','15505179303','1060040543',NULL,21,0,'2021-10-26 16:57:54','2021-10-29 10:17:29'),
+('04191461','王耀宗','19852769910','1732124324',NULL,21,0,'2021-10-26 16:57:54','2021-10-30 10:42:11'),
+('04191465',NULL,NULL,NULL,NULL,22,0,'2021-10-26 18:20:29','2021-10-26 18:20:29'),
+('04191466','胡晨博','19816251160','487826835',NULL,20,0,'2021-10-26 16:51:55','2021-10-29 10:46:31'),
+('04191486',NULL,NULL,NULL,NULL,22,0,'2021-10-26 18:22:18','2021-10-26 18:22:18'),
+('04191510','邓海容','18975291172','1624593950',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 10:11:34'),
+('04191512','马思颖','18361468692','2846459425',NULL,20,0,'2021-10-26 16:51:55','2021-10-29 10:03:56'),
+('04191514','李蓝馨','17712447263','2835410439',NULL,21,0,'2021-10-26 16:57:54','2021-10-30 10:14:55'),
+('04191515','张培媛','15027720885','1914778839',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 09:59:44'),
+('04191534','龚炽',NULL,NULL,NULL,20,0,'2021-10-26 16:51:55','2021-10-29 10:10:25'),
+('04191538','黄雷超','19852129113','919444587',NULL,22,0,'2021-10-26 18:22:18','2021-10-29 22:59:43'),
+('04191540','马鸿飞','13070631781','2596219821',NULL,22,0,'2021-10-26 18:22:18','2021-10-29 13:36:13'),
+('05191617',NULL,NULL,NULL,NULL,21,0,'2021-10-26 16:57:54','2021-10-26 16:57:54'),
+('06192124','刘伟','19816240010','3202050094',NULL,20,0,'2021-10-26 16:51:55','2021-10-29 20:52:33'),
+('06192206','王瑶','13785380104','1806569166',NULL,21,0,'2021-10-26 16:57:54','2021-10-29 10:04:17'),
+('09193322','聂同','19826089532','3410802753',NULL,21,0,'2021-10-26 16:57:54','2021-10-29 10:48:10'),
+('14194469','李苏雅','19895285685','306953603',NULL,22,0,'2021-10-26 18:22:18','2021-10-29 10:54:17'),
+('14194471','马菁华','13013290813','2927980107',NULL,21,0,'2021-10-26 16:57:54','2021-10-29 12:41:26'),
+('17195164','张耀元','15151201652','1173335492',NULL,22,0,'2021-10-26 18:20:29','2021-10-29 14:10:07'),
+('17195273',NULL,NULL,NULL,NULL,22,0,'2021-10-26 18:22:18','2021-10-26 18:22:18');
+
+/*Table structure for table `t_tea_design` */
+
+DROP TABLE IF EXISTS `t_tea_design`;
+
+CREATE TABLE `t_tea_design` (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `design_title` varchar(100) DEFAULT NULL COMMENT '设计标题',
+  `design_url` varchar(200) DEFAULT NULL COMMENT '设计内容',
+  `design_dir` varchar(200) DEFAULT NULL COMMENT '提交路径',
+  `tea_id` varchar(50) DEFAULT NULL COMMENT '教师id',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `t_tea_design` */
+
+/*Table structure for table `t_tea_work` */
+
+DROP TABLE IF EXISTS `t_tea_work`;
+
+CREATE TABLE `t_tea_work` (
+  `work_id` int NOT NULL AUTO_INCREMENT COMMENT 'work_id',
+  `tea_id` varchar(50) DEFAULT NULL COMMENT '教师id',
+  `work_title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '作业标题',
+  `work_describe` varchar(100) DEFAULT NULL COMMENT '作业描述',
+  `work_dir` varchar(200) DEFAULT NULL COMMENT '作业路径',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`work_id`),
+  KEY `tea_id` (`tea_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `t_tea_work` */
+
+insert  into `t_tea_work`(`work_id`,`tea_id`,`work_title`,`work_describe`,`work_dir`,`create_time`,`update_time`) values 
+(29,'00005459','第2章作业','null','/check_resource/00005459/第2章作业','2021-10-29 09:49:29','2021-10-29 09:50:03');
+
+/*Table structure for table `t_teacher` */
+
+DROP TABLE IF EXISTS `t_teacher`;
+
+CREATE TABLE `t_teacher` (
+  `tea_id` varchar(50) NOT NULL COMMENT '老师id',
+  `tea_name` varchar(50) DEFAULT NULL COMMENT '老师姓名',
+  `tea_phone` char(11) DEFAULT NULL COMMENT '老师手机',
+  `tea_qq` varchar(100) DEFAULT NULL COMMENT '老师qq',
+  `tea_mail` varchar(100) DEFAULT NULL COMMENT '老师邮箱',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`tea_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `t_teacher` */
+
+insert  into `t_teacher`(`tea_id`,`tea_name`,`tea_phone`,`tea_qq`,`tea_mail`,`create_time`,`update_time`) values 
+('00005459',NULL,NULL,NULL,NULL,'2021-10-26 15:58:58','2021-10-26 15:58:58');
+
+/*Table structure for table `t_user` */
+
+DROP TABLE IF EXISTS `t_user`;
+
+CREATE TABLE `t_user` (
+  `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户名',
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '用户密码',
+  `user_role_id` int DEFAULT NULL COMMENT '3学生,2老师,1管理员',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`username`),
+  KEY `ROLE_ID` (`user_role_id`) COMMENT '角色id普通索引'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `t_user` */
+
+insert  into `t_user`(`username`,`password`,`user_role_id`,`create_time`,`update_time`) values 
+('00005459','$2a$10$5qcX2TpoVPtxfVTPl7AQvuI65awNRrjPaTE5x/8MOXw4T/A53dEbK',2,'2021-10-26 15:58:58','2021-10-26 15:58:58'),
+('02190680','$2a$10$pMaTKr1Jt/8hvy0zJlCgm.wWlPS2spWb1I79vEm53U4u.JX/lHoJO',3,'2021-10-26 16:57:50','2021-10-26 16:57:50'),
+('03190862','$2a$10$JBGSAVtfekiX5QZGMr90WOhpS36191hDj5JO7G6fkBbc4ejI2mIL6',3,'2021-10-26 18:20:25','2021-10-26 18:20:25'),
+('04161341','$2a$10$z8ubZp8y0MyrRpnWmE9pt.iALehS5hcOK1hO8heU8k1MO.zVvR58K',3,'2021-10-26 18:22:17','2021-10-26 18:22:17'),
+('04171149','$2a$10$qerIBfpf.sXUeXcdnZ8FCeSivuvtlX7fhHjxQ/TKwd7rgw2s/tAr.',3,'2021-10-26 18:22:17','2021-10-26 18:22:17'),
+('04171233','$2a$10$PC5FjpJbfpQzv.T1gfj.euuGgeiCCaKhVky3kLlhPCEnpS2wc0Qvq',3,'2021-10-26 16:51:51','2021-10-26 16:51:51'),
+('04171435','$2a$10$J1AYVgY2CIp/s4fb6bHBneCAYm4XTscSN6xoRf2XZh2wEMXCJsaui',3,'2021-10-26 16:51:51','2021-10-26 16:51:51'),
+('04171447','$2a$10$4Gne.65dg3JkRNVlr6bMtO4yqySO4ze8PM9XU4l2.lQaRWQPuV7Nu',3,'2021-10-26 18:20:25','2021-10-26 18:20:25'),
+('04180000','$2a$10$R8mbigPfUXWikD5MhV/fu.8yC8QfVdD/rCE5jvvXo7sAWTwCs7uFS',1,NULL,'2021-03-09 13:52:22'),
+('04181205','$2a$10$hOVoloYSngStsB7I0bD1.uZHpXLtSRMisaBtNsnp18R0OUqHeHjge',3,'2021-10-26 18:22:17','2021-10-26 18:22:17'),
+('04181312','$2a$10$xWr2vT/RzXrSY7KSusEGCuprleIzggKlYhKbL4MdoJZVs4V4TjjsO',3,'2021-10-26 18:22:17','2021-10-26 18:22:17'),
+('04181485','$2a$10$KZI1GMPQ81wkiuWfFaXY7.kC9rFW.Pq9jBQYdKz022WqsybLYGJla',3,'2021-10-26 18:22:17','2021-10-26 18:22:17'),
+('04191150','$2a$10$lRgR86f3C/Ed7AT1/A7Jt.tQnN/c9dVbmgliUYlKig15g5pDMY8iq',3,'2021-10-26 16:51:51','2021-10-26 16:51:51'),
+('04191153','$2a$10$5rDCsRAb7kvr4w0M3xBZBONn6M/y.ID1wIRpRHlDm831NhUzB7SuS',3,'2021-10-26 16:51:51','2021-10-26 16:51:51'),
+('04191154','$2a$10$SbeOB6/3juLqMkqjx0fgeOkjNHF3IzbkEAM/R5ROgPfgjATysLVGO',3,'2021-10-26 16:51:51','2021-10-26 16:51:51'),
+('04191155','$2a$10$z4qdV9btHeQDLMS4vh5QPO1gbp0kj6Yl126bL9cex.Nl.vqqwVe52',3,'2021-10-26 16:57:50','2021-10-26 16:57:50'),
+('04191158','$2a$10$KWt40RN6ofrvokx5.AAyMOJx/EBcBkobIVPVlAAHJnOyfagQ6BQsi',3,'2021-10-26 16:57:50','2021-10-26 16:57:50'),
+('04191160','$2a$10$.1FbyBjAFx/yXqZ8./UypefUvjPRce0t5FzZySTLu1LYebhqGEmYO',3,'2021-10-26 16:57:50','2021-10-26 16:57:50'),
+('04191170','$2a$10$xSKSgxXYkybrFPKvtQmCUe0LplWhINQv428txi5usK7NEInvywnHm',3,'2021-10-26 16:51:52','2021-10-26 16:51:52'),
+('04191183','$2a$10$h3Rp5wr8q6KNqn/Xd4kgquKNcxzFcPGUH/drzAS6tBdzWd3etVO9a',3,'2021-10-26 18:20:26','2021-10-26 18:20:26'),
+('04191185','$2a$10$n4k978xzQLNb2EyjSbTaZO8qaSg9elu0Zg6Hq8PX1r5rByKUpho0.',3,'2021-10-26 16:51:52','2021-10-26 16:51:52'),
+('04191186','$2a$10$0uVLd0LIWTkvHtffZDWqpeYVgJfsgMv29J.LgyN2dC.I67UtuCuHq',3,'2021-10-26 16:51:52','2021-10-26 16:51:52'),
+('04191190','$2a$10$/2IkmrjMgBfg.GKumBBuOuEnC1XU0uIyTEkIi6Hqcs9sh4Kdvkn/S',3,'2021-10-26 16:57:50','2021-10-26 16:57:50'),
+('04191193','$2a$10$75GPCsHtmmshFbDQx/038OCl8IWTwjoebEO8dn7IC1/wfde7vMEIK',3,'2021-10-26 16:57:50','2021-10-26 16:57:50'),
+('04191194','$2a$10$pHcHpc3SDVHNLx6K3R7R7u7wAuj10jTjYBHrsNvmXvZWFZrbNv0ym',3,'2021-10-26 18:20:26','2021-10-26 18:20:26'),
+('04191195','$2a$10$5Axoo0ikhJLfkHeqn3DvaOWxOEJBHYYVPnpKWVUoeRtI6H9d0dtdm',3,'2021-10-26 16:57:50','2021-10-26 16:57:50'),
+('04191198','$2a$10$tje74P/XmQvawCE5Blq5sOQUTplxjqjADKkrvfwNMWY.zKKXdTk5u',3,'2021-10-26 16:57:50','2021-10-26 16:57:50'),
+('04191207','$2a$10$pv/1rOphZjgQsCe5ZO93QOLR/HjH.h2ChfTk9zcRIvlgsud2CEeV.',3,'2021-10-26 16:51:52','2021-10-26 16:51:52'),
+('04191215','$2a$10$VFflgR5g/dWM1Oq6RocVPOncTfONuc9lBh6kfxgi.7wjFCwVwF8Mi',3,'2021-10-26 16:51:52','2021-10-29 10:01:47'),
+('04191216','$2a$10$Lupear0LpYxjqk5J6XR43.itTyuxrMsmmlcNTtQAyPOoyleRzTpQS',3,'2021-10-26 16:57:51','2021-10-26 16:57:51'),
+('04191221','$2a$10$NCT78h/V/kVsJj5IS2GkGuM1yJ5WRSY14u/x/liysunpZlEa/XMb6',3,'2021-10-26 18:20:26','2021-10-26 18:20:26'),
+('04191230','$2a$10$RTUoDbERO6ihFBJZKk0Ky.htdUS41Q4BqBsRazS974jJOvbR5j9hW',3,'2021-10-26 16:57:51','2021-10-26 16:57:51'),
+('04191232','$2a$10$/vd8xeYi2ToZbNK74.I4cOtr/xMtQKmcEAn563EXEXJWsuo2wCfZe',3,'2021-10-26 16:57:51','2021-10-26 16:57:51'),
+('04191233','$2a$10$bIpPRDuwGwgk59nWV47L1ewPi8ettja0OKL1iaQwSVPOarTbJdWs6',3,'2021-10-26 16:57:51','2021-10-26 16:57:51'),
+('04191235','$2a$10$DdjyTZQudKi6OqCGQYnOOeCswv3kGQGIEmrhc//B9bor83yZIh6RS',3,'2021-10-26 16:57:51','2021-10-26 16:57:51'),
+('04191238','$2a$10$57s4Dj3oSk5FXkjae6/DHeCPlZP6aGheZsYnJIM8Ud5prh/r9N.lS',3,'2021-10-26 18:20:26','2021-10-26 18:20:26'),
+('04191244','$2a$10$J7hF23woescFaDX7WUldYO.xX6iNHGQXCm44lwZRO6UUMS4kRfvr2',3,'2021-10-26 16:57:51','2021-10-29 19:21:41'),
+('04191246','$2a$10$1E2Wu3PBbEjyr1Lymime2OG2ODKquXpBIAhje8pa.y6u/nDKo4kt6',3,'2021-10-26 16:57:51','2021-10-26 16:57:51'),
+('04191247','$2a$10$5D1EqsS25vA2OrcJPJkG6OzEjIyf/a5q28raDqoM9KcFRnX12O7Ka',3,'2021-10-26 16:51:52','2021-10-26 16:51:52'),
+('04191251','$2a$10$pcl5SlkbhSkDFARXYFBiFOyXM5qKkcUr1lwXVvCgUHjnlzXvYoOSS',3,'2021-10-26 16:51:52','2021-10-26 16:51:52'),
+('04191253','$2a$10$jD5Lz2B1wvkB.6czcIMj9.CNjY.lNu23Brz3GnXQc/BuWNbeJzWKe',3,'2021-10-26 16:57:51','2021-10-26 16:57:51'),
+('04191254','$2a$10$NnCun0opJRAvH2w3bRchgeI6S1EzR8YTqrBS4qbq.068LQpdsd4Ge',3,'2021-10-26 16:57:51','2021-10-26 16:57:51'),
+('04191255','$2a$10$p96iK81oKZ4rL3D1Y2kVve3jiLqNnC5kRpEfmmZ3VDJb79VBqRbnm',3,'2021-10-26 18:20:26','2021-10-29 09:59:58'),
+('04191260','$2a$10$WPgKcdzjkxLVcWWcP1X5Au1ehMrBEo6GRgQLfdkKMtnO1jhMGhInK',3,'2021-10-26 18:20:27','2021-10-29 11:08:00'),
+('04191262','$2a$10$vmdD36Snk8wbVdH6dIPIlOJMo3dOQOwltjOhNuEnM2AZQih0P4/G6',3,'2021-10-26 16:51:52','2021-10-26 16:51:52'),
+('04191263','$2a$10$Glt67ooKIBXitCTCNLQRR.E8Zj1VxhEzM2loPYZzbsMqBYMGq9IeC',3,'2021-10-26 16:51:53','2021-10-26 16:51:53'),
+('04191272','$2a$10$aeq595ikk57kPH9Thul/Q.xBwDFrNfNn59PM6w29aHWlrhbmVkJB6',3,'2021-10-26 18:20:27','2021-10-26 18:20:27'),
+('04191273','$2a$10$Q.PA.iR047dw42ynm4Xpde6yKzYbGe6P3DRodFoFNsydl3BYtH1qq',3,'2021-10-26 16:51:53','2021-10-26 16:51:53'),
+('04191278','$2a$10$pIEOpPxorvkvip3sC21H1OgRM6H0wLO.NtojHEYprRM4Upf.E9asW',3,'2021-10-26 18:20:27','2021-10-26 18:20:27'),
+('04191280','$2a$10$9tUZASSzFd1GYMk2e6c4pe3N/AuG1204VAofyPWdLGq7Q9Sfp6nB2',3,'2021-10-26 18:20:27','2021-10-26 18:20:27'),
+('04191299','$2a$10$je8XSKsz09QxdSADuYLLZ.AyzVSd6QlWiKV1NR3qxDvXGZ4YDr7bi',3,'2021-10-26 18:20:27','2021-10-26 18:20:27'),
+('04191302','$2a$10$JXeLougA7aY5zeOfpSZyq.82yWtPCEoRM50XP1TJHRXgkKSWkKuD.',3,'2021-10-26 18:20:28','2021-10-26 18:20:28'),
+('04191306','$2a$10$9bmXdp4O2BtBAlFHDOLPoe1.cuLIxMhKKr4Dfu/KZRqg3HMtmvate',3,'2021-10-26 16:57:51','2021-10-26 16:57:51'),
+('04191310','$2a$10$WMeXyRWqgsEuT6huxo1/DeA7RB3A250Xn0LyjD6kwdNaYek/qQ5pq',3,'2021-10-26 16:51:53','2021-10-26 16:51:53'),
+('04191315','$2a$10$U81b6jh9uLzdj29biFtirOsBWl5WvT9nHju1JNixcYezg.tFiTCQm',3,'2021-10-26 16:57:52','2021-10-26 16:57:52'),
+('04191322','$2a$10$pw.LHrX4WAtEYeckk4GqZOnkJAVjfDDa8G2qCU4hWus14P4xACgyy',3,'2021-10-26 18:20:28','2021-10-26 18:20:28'),
+('04191324','$2a$10$TGFtikbSYKU7lS3ichVxlePgj4cE6lmQVNEnu3K86bI9pX4hImM6e',3,'2021-10-26 18:20:28','2021-10-26 18:20:28'),
+('04191332','$2a$10$wqFNG9GySuObI4n4ahqo.eUQxco.GxIBM19mXyS.CE6J6SJjLPeN2',3,'2021-10-26 16:57:52','2021-10-26 16:57:52'),
+('04191336','$2a$10$RQLT7RK7BvniOYIYA/am9ucQ3cbyldZKYSlofTEBFCbrjtC/BVRhS',3,'2021-10-26 16:51:53','2021-10-26 16:51:53'),
+('04191343','$2a$10$SmuptdJsGJcHKUGFMkh86eqKeI8iRcUR8/LAk86tA.pV3oDST3plq',3,'2021-10-26 18:20:28','2021-10-26 18:20:28'),
+('04191345','$2a$10$dv2oFSbusKgqUPg0a.yks.sIC7XAHYPSDqQ/g3lF.LV6xZT.vQZVO',3,'2021-10-26 18:20:28','2021-10-26 18:20:28'),
+('04191357','$2a$10$/igE2mF0DinPRqGjcdbVXOxIN8UWABGkoMXrIwvUPU8k26QWh3WSW',3,'2021-10-26 16:51:53','2021-10-26 16:51:53'),
+('04191360','$2a$10$NtS.lFX4bnjUBDXh8zBDJu4nYAP0/t3Ac3qdtS9.FIfpA4zA8CLdW',3,'2021-10-26 18:20:28','2021-10-26 18:20:28'),
+('04191362','$2a$10$GhPT4Y6I3lk/vLHF7okA7eE84SZXU19dMMFthLMdaLaTTfbGsh/PK',3,'2021-10-26 16:57:52','2021-10-26 16:57:52'),
+('04191368','$2a$10$3TLmPyLs9Si/IHXj3YH6Q.jpxUupJfz4Zd4aB7aEpnUo.FviaUTdm',3,'2021-10-26 16:57:52','2021-10-29 19:01:25'),
+('04191371','$2a$10$NPuplb.ao.FIPWhI5SEJ0uPevFZ0xkVi8myfD8rxE9rZvd66rqfm2',3,'2021-10-26 18:20:28','2021-10-26 18:20:28'),
+('04191373','$2a$10$MpBaKK3XCV5Y.aiVAxSku.UcdUc2y6tGgjFypQbfutHY.Alnz5vay',3,'2021-10-26 18:20:28','2021-10-26 18:20:28'),
+('04191383','$2a$10$XLqr0a.mnQos4ZTFYiYgtuHlJ2i2ufA/1TILo3CdavXOaTrfJlnO6',3,'2021-10-26 18:22:18','2021-10-29 14:03:09'),
+('04191387','$2a$10$w.gMpZmW82q5qZQE0pyKuOJRil8LfZeLUVVMlrRSwXoew/PsguVoa',3,'2021-10-26 18:20:28','2021-10-26 18:20:28'),
+('04191389','$2a$10$LQIzIXd0tcm/SHRz7nOTPelMUnGkavbPjHVoKdXydWVyfpza1Y4dG',3,'2021-10-26 16:51:53','2021-10-26 16:51:53'),
+('04191391','$2a$10$lN1s1HRcyz7aydYDWDMc9.UAnvI9OI7UnP70bm26xKHEfRlbHldxK',3,'2021-10-26 18:20:29','2021-10-26 18:20:29'),
+('04191394','$2a$10$2K5GXZazjXGCWVmFJipmIutKUckH0aHC2Ju9rk5uRgaVCSk9B/uiy',3,'2021-10-26 18:20:29','2021-10-26 18:20:29'),
+('04191402','$2a$10$rzv9OcyNs2ZrifJCVswGx.pKMcQmKJmlluY6xBinG1bCxvCmpq8tG',3,'2021-10-26 16:57:52','2021-10-26 16:57:52'),
+('04191405','$2a$10$jtrkIPwT5E9SvnCI/KF49u55SmH8Zj9mGtnqaL0ngeZUPuZ2C8dh.',3,'2021-10-26 18:20:29','2021-10-26 18:20:29'),
+('04191409','$2a$10$LoecYCoPtBiMqL0QVZiCdO67YNJZqjqzyB81B6.OIFG22TRMw36mq',3,'2021-10-26 16:51:53','2021-10-26 16:51:53'),
+('04191418','$2a$10$716z0DTYxzTrRnorJkuLzusw3oW4boKfnW.H2AKd3Lat0GRZ/7RSG',3,'2021-10-26 16:57:52','2021-10-26 16:57:52'),
+('04191419','$2a$10$.gXtXo2QRW8U8gQoDNPHnOquzbts2uRS/jNcmd/StCjtLrdTrprbG',3,'2021-10-26 16:51:53','2021-10-26 16:51:53'),
+('04191426','$2a$10$YCvEqgdilmfbG4wN19vWhenpAczHTuEb0yD8fJCCk3V88T8Keey7O',3,'2021-10-26 16:57:52','2021-10-26 16:57:52'),
+('04191429','$2a$10$xljraVOMsNiArJsxVztvmeIu5cWXGZ3FqD8mwmsvXfldCDEKOUoLC',3,'2021-10-26 16:51:53','2021-10-26 16:51:53'),
+('04191430','$2a$10$mTTWusVwjIVusjFU0Vr3ieXavxI30avKZiA16C9PXepX/lhf/Upqq',3,'2021-10-26 16:51:54','2021-10-26 16:51:54'),
+('04191433','$2a$10$j9Klj1wIh8hBC74zdfpozurQh3uPr2zXLaq6nZfs4MV04xgzmmqTW',3,'2021-10-26 16:51:54','2021-10-26 16:51:54'),
+('04191435','$2a$10$gZApiU0Vh4Joy8JGV/90Gul.sXj.cWLGWKZfJfvTTd4/4/24i7Xwy',3,'2021-10-26 16:51:54','2021-10-26 16:51:54'),
+('04191436','$2a$10$9n0Szy.7DBjAjoW.6XWNauNLG14cYXjyh4vX0PY313H8gXNFQvc7.',3,'2021-10-26 16:51:54','2021-10-26 16:51:54'),
+('04191449','$2a$10$G13G70pfTUApVfNLqdGJpOLQZZYFPvqUQbnDBiRLpvFEpbUPzngLe',3,'2021-10-26 16:51:54','2021-10-26 16:51:54'),
+('04191450','$2a$10$WIJNnriUxpYbkfDgRNdVieHE.7hDTOk3jqTse63lfbSit5EDBd3Te',3,'2021-10-26 16:57:52','2021-10-26 16:57:52'),
+('04191459','$2a$10$pe/eC2x4KuMlD/em4/K0j.p/XZx8Xy.rD15W7lMJVmiZPmSvJ9VMy',3,'2021-10-26 16:57:52','2021-10-26 16:57:52'),
+('04191460','$2a$10$FgSDUB2UHgFNbBsTjbW6B.jpDORKnAdkZnOFpXHzPoPQ8gMcfvMMa',3,'2021-10-26 16:57:53','2021-10-26 16:57:53'),
+('04191461','$2a$10$9Lg6wImVRw0CYlWoaTP.E.WDZvsOk3r/L5ci9h7BNJXa6zwBnEnXm',3,'2021-10-26 16:57:53','2021-10-26 16:57:53'),
+('04191465','$2a$10$aJCwXfUHixn0sNGxG5ruCuaQg1zaSMxzNAbTc89gFJQT7m92SUEs2',3,'2021-10-26 18:20:29','2021-10-26 18:20:29'),
+('04191466','$2a$10$MEzRmvyCG9r3Uw98usmw7unEd7rZIxyh7n1l3jwDwDUGiPcgt1dtu',3,'2021-10-26 16:51:54','2021-10-26 16:51:54'),
+('04191486','$2a$10$9uE/rr1M/17Wd125Lz3iN.z/tfzsoHiL/r0ivBCL.jSgRWjT8M0g6',3,'2021-10-26 18:22:17','2021-10-26 18:22:17'),
+('04191510','$2a$10$87Ix5r3lqt6EO0ZgH/Oto.JGjS44oVoZSvru4tWBv1.xBEG2QRBn.',3,'2021-10-26 18:20:29','2021-10-26 18:20:29'),
+('04191512','$2a$10$fu82dPa2mToW/Wn5rOXHyOZDJEDtdK.sn5JkitiuaQYhmaMAPq2iq',3,'2021-10-26 16:51:54','2021-10-26 16:51:54'),
+('04191514','$2a$10$YZXpkIll8m41kc857Mtxc.ecnNkiqyITXLe2DjBVmsIUFoshtwYUm',3,'2021-10-26 16:57:53','2021-10-26 16:57:53'),
+('04191515','$2a$10$.jMpcZdZnke6QBGu85du9eBlJZH2/s4wstPW4SMLGHAEF9COnf.Xy',3,'2021-10-26 18:20:29','2021-10-26 18:20:29'),
+('04191534','$2a$10$ekujG3SHLxYthDB5qlWTne1YlZHeKBml1pmrY8Ym8Wx15Fijxl7ri',3,'2021-10-26 16:51:54','2021-10-26 16:51:54'),
+('04191538','$2a$10$34LUfNLkLzThexsmz9y4MuyfvMBSuL4MpWUPvsSJ.KJn1YCXo6q3.',3,'2021-10-26 18:22:17','2021-10-26 18:22:17'),
+('04191540','$2a$10$j0Pg7Mty0inDuIRA0fFt3urbJSy61IBLOHsgtaGJP/k48a5odCuES',3,'2021-10-26 18:22:17','2021-10-26 18:22:17'),
+('05191617','$2a$10$hgTVNxUd5snSsI7Yxd3Yq.DrcV2O/oBJXxr.cKFT.GC1Nom/Z5aKu',3,'2021-10-26 16:57:53','2021-10-26 16:57:53'),
+('06192124','$2a$10$7NgkNlF4ZIRlgMoZt2JcaOA3zdsnS5H797.Ig4XSio81NDSIZcpty',3,'2021-10-26 16:51:54','2021-10-26 16:51:54'),
+('06192206','$2a$10$TwvJpXIONdp8MPCBNeZ5XedW81/BidF6vhXcxBve.0SKhGlurWWV2',3,'2021-10-26 16:57:53','2021-10-26 16:57:53'),
+('09193322','$2a$10$hkFZ1pJLAbAk66tBCKwo1u4jFd1x21yOXSsqFgXFWLNBxMylfXVqa',3,'2021-10-26 16:57:53','2021-10-26 16:57:53'),
+('14194469','$2a$10$pS91DF5fVK.Y1VS9r.9XqO7.q390zCv.tByxCFvJyt2hZ3vsxjKuG',3,'2021-10-26 18:22:18','2021-10-26 18:22:18'),
+('14194471','$2a$10$GjEMyCa7jXLxY0SPJ/dxXuPHYwcyhE58cEBNFC.uDAsfpUfAh3rPa',3,'2021-10-26 16:57:53','2021-10-26 16:57:53'),
+('17195164','$2a$10$be1S5QJSvL9s9Tyub7HV4eHVgAtx.Va78xg9fGsbk55Gz86hMdTda',3,'2021-10-26 18:20:29','2021-10-26 18:20:29'),
+('17195273','$2a$10$P.nXsAQNRWrywyqltN68UeKIqkj/JhSM2FFDBVynnfYaXeL.uWpSG',3,'2021-10-26 18:22:17','2021-10-26 18:22:17');
+
+/*Table structure for table `t_work_result` */
+
+DROP TABLE IF EXISTS `t_work_result`;
+
+CREATE TABLE `t_work_result` (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `work_id` int DEFAULT NULL COMMENT '作业id',
+  `work_first_id` int DEFAULT NULL COMMENT '作业1id',
+  `work_second_id` int DEFAULT NULL COMMENT '作业2id',
+  `work_result` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '-1' COMMENT '重复率',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5969 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `t_work_result` */
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
